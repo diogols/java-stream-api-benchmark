@@ -1,12 +1,17 @@
 package model;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
@@ -217,4 +222,78 @@ public final class BJSUtils {
             return map;
         };
     }
+
+
+    // T7:  Usando List<TransCaixa> e Spliterator<TransCaixa> crie 4 partições cada uma com ¼ do data set.
+    // Compare os tempos de processamento de calcular a soma do valor das transacções com as quatro partições
+    // ou com o data set inteiro, quer usando List<> e forEach() quer usando streams sequenciais e paralelas.
+
+
+    public static Supplier<Double> t7_8_1(List<Transaction> transactions) {
+        return () -> {
+            Spliterator<Transaction> spliterator0 = transactions.spliterator();
+            Spliterator<Transaction> spliterator1 = spliterator0.trySplit();
+            Spliterator<Transaction> spliterator2 = spliterator0.trySplit();
+            Spliterator<Transaction> spliterator3 = spliterator1.trySplit();
+
+            ForkJoinPool pool = new ForkJoinPool(4);
+
+            Function<Spliterator<Transaction>, Double> sum = spliterator -> {
+                var doubleWrapper = new Object() { double value = 0; };
+                spliterator.forEachRemaining(t -> doubleWrapper.value += t.getValue());
+                return doubleWrapper.value;
+            };
+
+            List<Future<Double>> futures = pool.invokeAll(Arrays.asList(
+                    () -> sum.apply(spliterator0),
+                    () -> sum.apply(spliterator1),
+                    () -> sum.apply(spliterator2),
+                    () -> sum.apply(spliterator3))
+            );
+
+            return futures.stream().mapToDouble(f -> {
+                try {
+                    return f.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    return 0;
+                }
+            }).sum();
+        };
+    }
+
+    public static Supplier<Double> t7_7(List<Transaction> transactions) {
+        return () -> {
+            double sum = 0;
+            for (Transaction t : transactions) {
+                sum += t.getValue();
+            }
+            return sum;
+        };
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class BJS {
     public static void main(String[] args) {
-        List<Transaction> list = BJSUtils.load("transCaixa6M.txt", BJSUtils.toTransaction);
+        List<Transaction> list = BJSUtils.load("transCaixa1M.txt", BJSUtils.toTransaction);
 
         // SimpleEntry<Double, Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_8 = BJSUtils.testBox(BJSUtils.t6_8(list));
         // SimpleEntry<Double, Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_7 = BJSUtils.testBox(BJSUtils.t6_7(list));
@@ -22,5 +22,8 @@ public class BJS {
 
         // System.out.println(t6_8.getKey());
         // System.out.println(t6_7.getKey());
+
+        System.out.println(BJSUtils.t7_8_1(list).get());
+        System.out.println(BJSUtils.t7_7(list).get());
     }
 }

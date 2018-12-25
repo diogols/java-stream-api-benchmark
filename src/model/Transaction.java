@@ -1,7 +1,4 @@
-package model; /**
- *
- * @author fmm 2017
- */
+package model;
 
 import java.time.LocalDateTime;
 
@@ -16,26 +13,26 @@ public class Transaction {
         return new Transaction(id, counterId, value, date);
     }
 
-    Transaction(String id, String counterId, double value, LocalDateTime date) {
+    private Transaction(String id, String counterId, double value, LocalDateTime date) {
         this.id = id;
         this.counterId = counterId;
         this.value = value;
         this.date = date;
     }
 
-    public String getId() {
+    String getId() {
         return id;
     }
 
-    public String getCounterId() {
+    String getCounterId() {
         return counterId;
     }
 
-    public double getValue() {
+    double getValue() {
         return value;
     }
 
-    public LocalDateTime getDate() {
+    LocalDateTime getDate() {
         return date;
     }
 
