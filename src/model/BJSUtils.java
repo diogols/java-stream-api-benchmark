@@ -3,16 +3,17 @@ package model;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
+import java.time.Month;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.AbstractMap.SimpleEntry;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 
@@ -119,7 +120,101 @@ public final class BJSUtils {
     public static Supplier<DoubleStream> j8DSPT1(List<Transaction> transactions) {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
     }
-    
 
 
+    // DIOGO RAFAEL
+    // T6
+
+    public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_8_1(List<Transaction> transactions) {
+        return () -> transactions.stream().collect(groupingBy(t -> t.getDate().getMonth(),
+                groupingBy(t -> t.getDate().getDayOfMonth(),
+                        groupingBy(t -> t.getDate().getHour()))));
+    }
+
+    public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_7_1(List<Transaction> transactions) {
+        return () -> {
+            Map<Month, Map<Integer, Map<Integer, List<Transaction>>>> map = new HashMap<>();
+            Month month;
+            int day;
+            int hour;
+            LocalDateTime dateTime;
+            Map<Integer, Map<Integer, List<Transaction>>> dayMap;
+            Map<Integer, List<Transaction>> hourMap;
+            List<Transaction> list;
+
+            for (Transaction t : transactions) {
+                dateTime = t.getDate();
+                month = dateTime.getMonth();
+                day = dateTime.getDayOfMonth();
+                hour = dateTime.getHour();
+
+                dayMap = map.get(month);
+                if (dayMap != null) {
+                    hourMap = dayMap.get(day);
+
+                    if (hourMap != null) {
+                        list = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
+                        list.add(t);
+                    } else {
+                        list = new ArrayList<>();
+                        list.add(t);
+
+                        hourMap = new HashMap<>();
+                        hourMap.put(hour, list);
+
+                        dayMap.put(day, hourMap);
+                    }
+                } else {
+                    list = new ArrayList<>();
+                    list.add(t);
+
+                    hourMap = new HashMap<>();
+                    hourMap.put(hour, list);
+
+                    dayMap = new HashMap<>();
+                    dayMap.put(day, hourMap);
+
+                    map.put(month, dayMap);
+                }
+            }
+            return map;
+        };
+    }
+
+    public static Supplier<Map<DayOfWeek, Map<Integer, List<Transaction>>>> t6_8_2(List<Transaction> transactions) {
+        return () -> transactions.stream().collect(groupingBy(t -> t.getDate().getDayOfWeek(),
+                groupingBy(t -> t.getDate().getHour())));
+    }
+
+    public static Supplier<Map<DayOfWeek, Map<Integer, List<Transaction>>>> t6_7_2(List<Transaction> transactions) {
+        return () -> {
+            Map<DayOfWeek, Map<Integer, List<Transaction>>> map = new HashMap<>();
+            DayOfWeek day;
+            int hour;
+            LocalDateTime dateTime;
+            Map<Integer, List<Transaction>> hourMap;
+            List<Transaction> list;
+
+            for (Transaction t : transactions) {
+                dateTime = t.getDate();
+                day = dateTime.getDayOfWeek();
+                hour = dateTime.getHour();
+
+                hourMap = map.get(day);
+                if (hourMap != null) {
+                    list = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
+                    list.add(t);
+                } else {
+                    list = new ArrayList<>();
+                    list.add(t);
+
+                    hourMap = new HashMap<>();
+                    hourMap.put(hour, list);
+
+                    map.put(day, hourMap);
+                }
+            }
+            return map;
+        };
+    }
 }
