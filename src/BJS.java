@@ -23,9 +23,19 @@ public class BJS {
         // System.out.println(t6_8.getKey());
         // System.out.println(t6_7.getKey());
 
-        System.out.printf("%f\n",BJSUtils.t7_8_1(list).get());
-        System.out.printf("%f\n",BJSUtils.t7_8_2(list).get());
-        System.out.printf("%f\n",BJSUtils.t7_8_3(list).get());
-        System.out.printf("%f\n",BJSUtils.t7_7(list).get());
+//        System.out.printf("%f\n",BJSUtils.t7_8_1(list).get());
+//        System.out.printf("%f\n",BJSUtils.t7_8_2(list).get());
+//        System.out.printf("%f\n",BJSUtils.t7_8_3(list).get());
+//        System.out.printf("%f\n",BJSUtils.t7_7(list).get());
+
+         SimpleEntry<Double, String> t8_7 = BJSUtils.testBox(0, BJSUtils.t8_7(list));
+        SimpleEntry<Double, String> t8_8 = BJSUtils.testBox(0, BJSUtils.t8_8(list));
+
+         System.out.println(t8_7.getKey());
+         System.out.println(t8_8.getKey());
+
+        System.out.println(t8_7.getValue());
+        System.out.println(t8_8.getValue());
+
     }
 }

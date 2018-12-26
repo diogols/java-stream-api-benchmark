@@ -282,7 +282,44 @@ public final class BJSUtils {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
     }
 
+    public static Supplier<String> t8_7(List<Transaction> transactions) {
+        return () -> {
+            final int startHour = 16;
+            final int endHour = 22;
 
+            String id = "";
+            double value = 0;
+
+            for (Transaction t : transactions) {
+                if (t.getDate().getHour() >= 16 && t.getDate().getHour() < 22 && t.getValue() > value) {
+                    id = t.getId();
+                    value = t.getValue();
+                }
+            }
+
+            return id;
+        };
+    }
+
+    public static Supplier<String> t8_8(List<Transaction> transactions) {
+        return () -> {
+            final int startHour = 16;
+            final int endHour = 22;
+
+            // i could use a Transaction instance but this seems faster
+            var transaction = new Object() { String id; double value = 0; };
+
+            // i am excluding 22:00:00 just for the sake of code simplicity
+            transactions.forEach(t -> {
+                        if (t.getDate().getHour() >= 16 && t.getDate().getHour() < 22 && t.getValue() > transaction.value) {
+                            transaction.value = t.getValue();
+                            transaction.id = t.getId();
+                        }
+                    } );
+
+            return transaction.id;
+        };
+    }
 }
 
 
