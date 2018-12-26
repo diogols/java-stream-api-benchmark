@@ -70,18 +70,6 @@ public final class BJSUtils {
         return Transaction.of(id, counterId, value, LocalDateTime.of(year, month, day, hours, minutes, 0));
     };
 
-    public static Supplier<double[]> j7ForT1(final List<Transaction> transactions) {
-        return () -> {
-            final int size = transactions.size();
-            final double[] values = new double[size];
-
-            for (int i = 0; i < size; i++) {
-                values[i] = transactions.get(i).getValue();
-            }
-            return values;
-        };
-    }
-
     public static <R> SimpleEntry<Double,R> testBox(int runs, Supplier<? extends R> supplier)  {
         // warm up
         for(int i = 1 ; i <= runs; i++) {
@@ -98,7 +86,19 @@ public final class BJSUtils {
        return testBox(RUNS, supplier);
     }
 
-    public static Supplier<double[]> j7ForEachT1(List<Transaction> transactions) {
+    public static Supplier<double[]> t1_7_1(final List<Transaction> transactions) {
+        return () -> {
+            final int size = transactions.size();
+            final double[] values = new double[size];
+
+            for (int i = 0; i < size; i++) {
+                values[i] = transactions.get(i).getValue();
+            }
+            return values;
+        };
+    }
+
+    public static Supplier<double[]> t1_7_2(List<Transaction> transactions) {
         return () -> {
             final double[] values = new double[transactions.size()];
 
@@ -110,22 +110,21 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<Stream<Double>> j8SDT1(List<Transaction> transactions) {
+    public static Supplier<Stream<Double>> t1_8_1(List<Transaction> transactions) {
         return () -> transactions.stream().map(Transaction::getValue);
     }
 
-    public static Supplier<DoubleStream> j8DST1(List<Transaction> transactions) {
+    public static Supplier<DoubleStream> t1_8_2(List<Transaction> transactions) {
         return () -> transactions.stream().mapToDouble(Transaction::getValue);
     }
 
-    public static Supplier<Stream<Double>> j8SDPT1(List<Transaction> transactions) {
+    public static Supplier<Stream<Double>> t1_8_3(List<Transaction> transactions) {
         return () -> transactions.parallelStream().map(Transaction::getValue);
     }
 
-    public static Supplier<DoubleStream> j8DSPT1(List<Transaction> transactions) {
+    public static Supplier<DoubleStream> t1_8_4(List<Transaction> transactions) {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
     }
-
 
     // DIOGO RAFAEL
     // T6
@@ -134,6 +133,38 @@ public final class BJSUtils {
         return () -> transactions.stream().collect(groupingBy(t -> t.getDate().getMonth(),
                 groupingBy(t -> t.getDate().getDayOfMonth(),
                         groupingBy(t -> t.getDate().getHour()))));
+    }
+
+    public static Supplier<Map<DayOfWeek, Map<Integer, List<Transaction>>>> t6_7_2(List<Transaction> transactions) {
+        return () -> {
+            Map<DayOfWeek, Map<Integer, List<Transaction>>> map = new HashMap<>();
+            DayOfWeek day;
+            int hour;
+            LocalDateTime dateTime;
+            Map<Integer, List<Transaction>> hourMap;
+            List<Transaction> list;
+
+            for (Transaction t : transactions) {
+                dateTime = t.getDate();
+                day = dateTime.getDayOfWeek();
+                hour = dateTime.getHour();
+
+                hourMap = map.get(day);
+                if (hourMap != null) {
+                    list = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
+                    list.add(t);
+                } else {
+                    list = new ArrayList<>();
+                    list.add(t);
+
+                    hourMap = new HashMap<>();
+                    hourMap.put(hour, list);
+
+                    map.put(day, hourMap);
+                }
+            }
+            return map;
+        };
     }
 
     public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_7_1(List<Transaction> transactions) {
@@ -191,43 +222,15 @@ public final class BJSUtils {
                 groupingBy(t -> t.getDate().getHour())));
     }
 
-    public static Supplier<Map<DayOfWeek, Map<Integer, List<Transaction>>>> t6_7_2(List<Transaction> transactions) {
+    public static Supplier<Double> t7_7(List<Transaction> transactions) {
         return () -> {
-            Map<DayOfWeek, Map<Integer, List<Transaction>>> map = new HashMap<>();
-            DayOfWeek day;
-            int hour;
-            LocalDateTime dateTime;
-            Map<Integer, List<Transaction>> hourMap;
-            List<Transaction> list;
-
+            double sum = 0;
             for (Transaction t : transactions) {
-                dateTime = t.getDate();
-                day = dateTime.getDayOfWeek();
-                hour = dateTime.getHour();
-
-                hourMap = map.get(day);
-                if (hourMap != null) {
-                    list = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
-                    list.add(t);
-                } else {
-                    list = new ArrayList<>();
-                    list.add(t);
-
-                    hourMap = new HashMap<>();
-                    hourMap.put(hour, list);
-
-                    map.put(day, hourMap);
-                }
+                sum += t.getValue();
             }
-            return map;
+            return sum;
         };
     }
-
-
-    // T7:  Usando List<TransCaixa> e Spliterator<TransCaixa> crie 4 partições cada uma com ¼ do data set.
-    // Compare os tempos de processamento de calcular a soma do valor das transacções com as quatro partições
-    // ou com o data set inteiro, quer usando List<> e forEach() quer usando streams sequenciais e paralelas.
-
 
     public static Supplier<Double> t7_8_1(List<Transaction> transactions) {
         return () -> {
@@ -279,15 +282,7 @@ public final class BJSUtils {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
     }
 
-    public static Supplier<Double> t7_7(List<Transaction> transactions) {
-        return () -> {
-            double sum = 0;
-            for (Transaction t : transactions) {
-                sum += t.getValue();
-            }
-            return sum;
-        };
-    }
+
 }
 
 
