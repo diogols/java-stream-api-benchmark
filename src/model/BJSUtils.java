@@ -240,7 +240,7 @@ public final class BJSUtils {
 
             Function<Spliterator<Transaction>, Double> sumFunction = spliterator -> {
                 var doubleWrapper = new Object() { double value = 0; };
-                spliterator.forEachRemaining(t -> doubleWrapper.value += t.getValue());
+                while(spliterator.tryAdvance(t -> doubleWrapper.value += t.getValue()));
                 return doubleWrapper.value;
             };
 
