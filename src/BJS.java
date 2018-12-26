@@ -23,7 +23,9 @@ public class BJS {
         // System.out.println(t6_8.getKey());
         // System.out.println(t6_7.getKey());
 
-        System.out.printf("%f",BJSUtils.t7_8_1(list).get());
-        System.out.printf("%f",BJSUtils.t7_7(list).get());
+        System.out.printf("%f\n",BJSUtils.t7_8_1(list).get());
+        System.out.printf("%f\n",BJSUtils.t7_8_2(list).get());
+        System.out.printf("%f\n",BJSUtils.t7_8_3(list).get());
+        System.out.printf("%f\n",BJSUtils.t7_7(list).get());
     }
 }

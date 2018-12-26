@@ -271,6 +271,14 @@ public final class BJSUtils {
         };
     }
 
+    public static Supplier<Double> t7_8_2(List<Transaction> transactions) {
+        return () -> transactions.stream().mapToDouble(Transaction::getValue).sum();
+    }
+
+    public static Supplier<Double> t7_8_3(List<Transaction> transactions) {
+        return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
+    }
+
     public static Supplier<Double> t7_7(List<Transaction> transactions) {
         return () -> {
             double sum = 0;
