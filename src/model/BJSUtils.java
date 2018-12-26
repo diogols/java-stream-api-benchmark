@@ -1,14 +1,13 @@
 package model;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.temporal.IsoFields;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
@@ -18,8 +17,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.AbstractMap.SimpleEntry;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 
 public final class BJSUtils {
@@ -86,6 +84,8 @@ public final class BJSUtils {
        return testBox(RUNS, supplier);
     }
 
+    // T1
+
     public static Supplier<double[]> t1_7_1(final List<Transaction> transactions) {
         return () -> {
             final int size = transactions.size();
@@ -126,7 +126,6 @@ public final class BJSUtils {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
     }
 
-    // DIOGO RAFAEL
     // T6
 
     public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_8_1(List<Transaction> transactions) {
@@ -232,6 +231,8 @@ public final class BJSUtils {
         };
     }
 
+    // T7
+
     public static Supplier<Double> t7_8_1(List<Transaction> transactions) {
         return () -> {
             Spliterator<Transaction> spliterator0 = transactions.spliterator();
@@ -320,9 +321,63 @@ public final class BJSUtils {
             return transaction.id;
         };
     }
+
+    // T9
+
+    public static Supplier<Double> t9_7(List<Transaction> transactions, int weekOfYear) {
+        return t9_7(toWeekDayLists(transactions).get(weekOfYear));
+    }
+
+    public static Supplier<Double> t9_8(List<Transaction> transactions, int weekOfYear) {
+        return t9_8(toWeekDayLists(transactions).get(weekOfYear));
+    }
+
+
+    // Argument is the week of transactions of some week in a year
+    public static Supplier<Double> t9_7(List<List<Transaction>> transactions) {
+        return () -> {
+            double sum = 0;
+            for (List<Transaction> l : transactions) {
+                for (Transaction t : l) {
+                    sum += t.getValue();
+                }
+            }
+            return sum;
+        };
+    }
+
+    public static Supplier<Double> t9_8(List<List<Transaction>> transactions) {
+        return () -> transactions.stream().mapToDouble(l -> l.stream().mapToDouble(Transaction::getValue).sum()).sum();
+    }
+
+    // Create another method with Java 8 maybe
+    public static List<List<List<Transaction>>> toWeekDayLists(List<Transaction> transactions) {
+        int week;
+        int day;
+        List<List<Transaction>> days;
+
+        final List<List<List<Transaction>>> weekDayList = new ArrayList<>();
+
+        for (int i = 0; i < 53; i++) {
+            days = new ArrayList<>();
+            for (int j = 0; j < 7; j++) {
+                days.add(new ArrayList<>());
+            }
+            weekDayList.add(days);
+        }
+
+        for (Transaction t: transactions) {
+            week = t.getDate().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - 1;
+            day = t.getDate().getDayOfWeek().getValue() - 1;
+
+            weekDayList.get(week).get(day).add(t);
+        }
+
+        return weekDayList;
+    }
+
+
 }
-
-
 
 
 
