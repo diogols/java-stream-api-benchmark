@@ -415,6 +415,14 @@ public final class BJSUtils {
 
     // should return toList() directly but i do not know how
     public static Supplier<List<Double>> t10_8(List<Transaction> transactions) {
-        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(), summingDouble(Transaction::getValue))).values());
+        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(), summingDouble(t -> {
+            if(t.getValue() > 29) {
+                return t.getValue() * 0.23;
+            } else if (t.getValue() < 20) {
+                return t.getValue() * 0.12;
+            } else {
+                return t.getValue() * 0.20;
+            }
+        }))).values());
     }
 }
