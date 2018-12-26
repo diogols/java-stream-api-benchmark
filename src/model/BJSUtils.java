@@ -238,26 +238,36 @@ public final class BJSUtils {
 
             ForkJoinPool pool = new ForkJoinPool(4);
 
-            Function<Spliterator<Transaction>, Double> sum = spliterator -> {
+            Function<Spliterator<Transaction>, Double> sumFunction = spliterator -> {
                 var doubleWrapper = new Object() { double value = 0; };
                 spliterator.forEachRemaining(t -> doubleWrapper.value += t.getValue());
                 return doubleWrapper.value;
             };
 
             List<Future<Double>> futures = pool.invokeAll(Arrays.asList(
-                    () -> sum.apply(spliterator0),
-                    () -> sum.apply(spliterator1),
-                    () -> sum.apply(spliterator2),
-                    () -> sum.apply(spliterator3))
+                    () -> sumFunction.apply(spliterator0),
+                    () -> sumFunction.apply(spliterator1),
+                    () -> sumFunction.apply(spliterator2),
+                    () -> sumFunction.apply(spliterator3))
             );
 
-            return futures.stream().mapToDouble(f -> {
+            double sum = 0;
+            for (Future<Double> future : futures) {
                 try {
-                    return f.get();
+                    sum += future.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    return 0;
+                    e.printStackTrace();
                 }
-            }).sum();
+            }
+            return sum;
+
+//            return futures.stream().mapToDouble(f -> {
+//                try {
+//                    return f.get();
+//                } catch (InterruptedException | ExecutionException e) {
+//                    return 0;
+//                }
+//            }).sum();
         };
     }
 
