@@ -41,6 +41,13 @@ public class BJS {
 //        System.out.println(t9_7.getKey() + " " + t9_7.getValue());
 //        System.out.println(t9_8.getKey() + " " + t9_8.getValue());
 
+        // T10
+
+        SimpleEntry<Double, List<Double>> t10_7 = BJSUtils.testBox(0, BJSUtils.t10_7(transactions));
+        SimpleEntry<Double, List<Double>> t10_8 = BJSUtils.testBox(0, BJSUtils.t10_8(transactions));
+
+        System.out.println(t10_7.getKey() + " " + t10_7.getValue());
+        System.out.println(t10_8.getKey() + " " + t10_8.getValue());
 
     }
 }

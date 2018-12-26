@@ -13,6 +13,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.AbstractMap.SimpleEntry;
@@ -376,29 +377,44 @@ public final class BJSUtils {
         return weekDayList;
     }
 
+    // T10
 
+    /*
+    T10: Admitindo que o IVA a entregar por transacção é de 12% para transacções menores que 20 Euros,
+    20% entre 20 e 29 e 23% para valores superiores,
+    crie uma tabela com o valor de IVA total a pagar por mês.
+    Compare as soluções em JAVA 7 e Java 8.
+     */
+
+    public static Supplier<List<Double>> t10_7(List<Transaction> transactions) {
+        return () -> {
+            double value;
+            int month;
+            final List<Double> vat = new ArrayList<>();
+
+            for (int i = 0; i < 12; i++) {
+                vat.add(0.0);
+            }
+
+            for (Transaction t : transactions) {
+                value = t.getValue();
+                month = t.getDate().getMonth().getValue() - 1;
+
+                if(value > 29) {
+                    vat.set(month, vat.get(month) + value * 0.23);
+                } else if (value < 20) {
+                    vat.set(month, vat.get(month) + value * 0.12);
+                } else {
+                    vat.set(month, vat.get(month) + value * 0.20);
+                }
+            }
+
+            return vat;
+        };
+    }
+
+    // should return toList() directly but i do not know how
+    public static Supplier<List<Double>> t10_8(List<Transaction> transactions) {
+        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(), summingDouble(Transaction::getValue))).values());
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
