@@ -23,7 +23,7 @@ public class BJS {
         // System.out.println(t6_8.getKey());
         // System.out.println(t6_7.getKey());
 
-        System.out.println(BJSUtils.t7_8_1(list).get());
-        System.out.println(BJSUtils.t7_7(list).get());
+        System.out.println(String.format("%.9f",BJSUtils.t7_8_1(list).get()));
+        System.out.println(String.format("%.9f",BJSUtils.t7_7(list).get()));
     }
 }
