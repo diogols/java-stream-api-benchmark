@@ -69,6 +69,8 @@ public final class BJSUtils {
         return Transaction.of(id, counterId, value, LocalDateTime.of(year, month, day, hours, minutes, 0));
     };
 
+    public static Comparator<Transaction> compareTransactionsById = Comparator.comparing(Transaction::getId);
+
     public static <R> SimpleEntry<Double,R> testBox(int runs, Supplier<? extends R> supplier)  {
         // warm up
         for(int i = 1 ; i <= runs; i++) {
@@ -125,6 +127,19 @@ public final class BJSUtils {
 
     public static Supplier<DoubleStream> t1_8_4(List<Transaction> transactions) {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
+    }
+
+
+
+
+    // T5
+
+    public static Supplier<Set<Transaction>> t5_7(List<Transaction> transactions, Comparator<Transaction> comparator) {
+        return () -> new TreeSet<>(comparator) {{ addAll(transactions); }};
+    }
+
+    public static Supplier<List<Transaction>> t5_8(List<Transaction> transactions, Comparator<Transaction> comparator) {
+        return () -> transactions.stream().sorted(comparator).collect(toList());
     }
 
     // T6
@@ -425,4 +440,6 @@ public final class BJSUtils {
             }
         }))).values());
     }
+
+    // T12
 }

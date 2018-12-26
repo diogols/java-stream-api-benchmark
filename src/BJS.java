@@ -3,6 +3,7 @@ import model.Transaction;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Set;
 
 public class BJS {
     public static void main(String[] args) {
@@ -43,11 +44,21 @@ public class BJS {
 
         // T10
 
-        SimpleEntry<Double, List<Double>> t10_7 = BJSUtils.testBox(0, BJSUtils.t10_7(transactions));
-        SimpleEntry<Double, List<Double>> t10_8 = BJSUtils.testBox(0, BJSUtils.t10_8(transactions));
+//        SimpleEntry<Double, List<Double>> t10_7 = BJSUtils.testBox(0, BJSUtils.t10_7(transactions));
+//        SimpleEntry<Double, List<Double>> t10_8 = BJSUtils.testBox(0, BJSUtils.t10_8(transactions));
+//
+//        System.out.println(t10_7.getKey() + " " + t10_7.getValue());
+//        System.out.println(t10_8.getKey() + " " + t10_8.getValue());
 
-        System.out.println(t10_7.getKey() + " " + t10_7.getValue());
-        System.out.println(t10_8.getKey() + " " + t10_8.getValue());
+        // T5
+
+//        SimpleEntry<Double, Set<Transaction>> t5_7 = BJSUtils.testBox(0, BJSUtils.t5_7(transactions, BJSUtils.compareTransactionsById));
+//        SimpleEntry<Double, List<Transaction>> t5_8 = BJSUtils.testBox(0, BJSUtils.t5_8(transactions, BJSUtils.compareTransactionsById));
+//
+//        System.out.println(t5_7.getKey());
+//        t5_7.getValue().stream().limit(10).forEach(System.out::println);
+//        System.out.println(t5_8.getKey());
+//        t5_8.getValue().stream().limit(10).forEach(System.out::println);
 
     }
 }
