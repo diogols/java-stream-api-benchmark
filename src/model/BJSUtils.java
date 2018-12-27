@@ -11,8 +11,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.AbstractMap.SimpleEntry;
@@ -279,23 +277,21 @@ public final class BJSUtils {
                 }
             }
             return sum;
-
-//            return futures.stream().mapToDouble(f -> {
-//                try {
-//                    return f.get();
-//                } catch (InterruptedException | ExecutionException e) {
-//                    return 0;
-//                }
-//            }).sum();
         };
     }
 
+    /*
     public static Supplier<Double> t7_8_2(List<Transaction> transactions) {
         return () -> transactions.stream().mapToDouble(Transaction::getValue).sum();
     }
+    */
+
+    public static Supplier<Double> t7_8_2(List<Transaction> transactions) {
+        return () -> transactions.stream().map(Transaction::getValue).reduce(0.0, Double::sum);
+    }
 
     public static Supplier<Double> t7_8_3(List<Transaction> transactions) {
-        return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
+        return () -> transactions.parallelStream().map(Transaction::getValue).reduce(0.0, Double::sum);
     }
 
     public static Supplier<String> t8_7(List<Transaction> transactions) {
@@ -362,7 +358,7 @@ public final class BJSUtils {
     }
 
     public static Supplier<Double> t9_8(List<List<Transaction>> transactions) {
-        return () -> transactions.stream().mapToDouble(l -> l.stream().mapToDouble(Transaction::getValue).sum()).sum();
+        return () -> transactions.stream().map(l -> l.stream().map(Transaction::getValue).reduce(0.0, Double::sum)).reduce(0.0, Double::sum);
     }
 
     // Create another method with Java 8 maybe
@@ -455,20 +451,16 @@ public final class BJSUtils {
     public static Supplier<Map<String, Double>> t12_Map_2(Map<String, Map<Month, List<Transaction>>> map) {
         return () -> map.entrySet().parallelStream().collect(toMap(
                 Map.Entry::getKey,
-                e -> e.getValue().values().stream()
-                        .mapToDouble(l -> l.stream().mapToDouble(Transaction::getValue)
-                                .reduce(0, (a, b) -> a + b)).sum(),
-                (Double a, Double b) -> a + b)
+                e -> e.getValue().values().stream().map(l -> l.stream().map(Transaction::getValue)
+                        .reduce(0.0, Double::sum)).reduce(0.0, Double::sum), Double::sum)
         );
     }
 
     public static Supplier<ConcurrentMap<String, Double>> t12_ConcurrentMap_2(ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>> map) {
         return () -> map.entrySet().parallelStream().collect(toConcurrentMap(
                 ConcurrentMap.Entry::getKey,
-                e -> e.getValue().values().stream()
-                        .mapToDouble(l -> l.stream().mapToDouble(Transaction::getValue)
-                                .reduce(0, (a, b) -> a + b)).sum(),
-                (Double a, Double b) -> a + b)
+                e -> e.getValue().values().stream().map(l -> l.stream().map(Transaction::getValue)
+                                .reduce(0.0, Double::sum)).reduce(0.0, Double::sum), Double::sum)
         );
     }
 }

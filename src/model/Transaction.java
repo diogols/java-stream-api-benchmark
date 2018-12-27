@@ -28,7 +28,7 @@ public class Transaction {
         return counterId;
     }
 
-    double getValue() {
+    public double getValue() {
         return value;
     }
 

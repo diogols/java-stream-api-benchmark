@@ -3,6 +3,7 @@ import model.Transaction;
 
 import java.time.Month;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,5 +92,15 @@ public class BJS {
 
         //System.out.println(t12_map_total.getValue().get("2"));
         //System.out.println(t12_concurrent_total.getValue().get("2"));
+
+        double sum7 = 0;
+        for (Transaction t : transactions) {
+            sum7 += t.getValue();
+        }
+
+        System.out.printf("%f\n", sum7);
+        System.out.printf("%f\n", transactions.stream().map(Transaction::getValue).reduce(0.0, Double::sum));
+
+
     }
 }
