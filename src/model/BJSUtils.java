@@ -414,7 +414,7 @@ public final class BJSUtils {
                 value = t.getValue();
                 month = t.getDate().getMonth().getValue() - 1;
 
-                if(value > 29) {
+                if (value > 29) {
                     vat.set(month, vat.get(month) + value * 0.23);
                 } else if (value < 20) {
                     vat.set(month, vat.get(month) + value * 0.12);
@@ -429,8 +429,8 @@ public final class BJSUtils {
 
     // should return toList() directly but i do not know how
     public static Supplier<List<Double>> t10_8(List<Transaction> transactions) {
-        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(), summingDouble(t -> {
-            if(t.getValue() > 29) {
+        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(), TreeMap::new, summingDouble(t -> {
+            if (t.getValue() > 29) {
                 return t.getValue() * 0.23;
             } else if (t.getValue() < 20) {
                 return t.getValue() * 0.12;
