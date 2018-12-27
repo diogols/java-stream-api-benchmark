@@ -449,7 +449,7 @@ public final class BJSUtils {
     }
 
     public static Supplier<Map<String, Double>> t12_Map_2(Map<String, Map<Month, List<Transaction>>> map) {
-        return () -> map.entrySet().parallelStream().collect(toMap(
+        return () -> map.entrySet().stream().collect(toMap(
                 Map.Entry::getKey,
                 e -> e.getValue().values().stream().map(l -> l.stream().map(Transaction::getValue)
                         .reduce(0.0, Double::sum)).reduce(0.0, Double::sum), Double::sum)
@@ -461,6 +461,14 @@ public final class BJSUtils {
                 ConcurrentMap.Entry::getKey,
                 e -> e.getValue().values().stream().map(l -> l.stream().map(Transaction::getValue)
                                 .reduce(0.0, Double::sum)).reduce(0.0, Double::sum), Double::sum)
+        );
+    }
+
+    public static Supplier<ConcurrentMap<String, Double>> t12(ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>> map) {
+        return () -> map.entrySet().parallelStream().collect(toConcurrentMap(
+                ConcurrentMap.Entry::getKey,
+                e -> e.getValue().values().stream().map(l -> l.stream().map(Transaction::getValue)
+                        .reduce(0.0, Double::sum)).reduce(0.0, Double::sum), Double::sum)
         );
     }
 }
