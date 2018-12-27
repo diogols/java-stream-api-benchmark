@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -440,43 +441,34 @@ public final class BJSUtils {
     }
 
     // T12
-    public static Supplier<Map<String, Map<Month, List<Transaction>>>> t12_Map(List<Transaction> transactions) {
+
+    public static Supplier<Map<String, Map<Month, List<Transaction>>>> t12_Map_1(List<Transaction> transactions) {
         return () -> transactions.parallelStream().collect(groupingBy(Transaction::getCounterId,
                 groupingBy(t -> t.getDate().getMonth())));
     }
 
-    public static Supplier<ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_Concurrent(List<Transaction> transactions) {
+    public static Supplier<ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_ConcurrentMap_1(List<Transaction> transactions) {
         return () -> transactions.parallelStream().collect(groupingByConcurrent(Transaction::getCounterId,
                 groupingByConcurrent(t -> t.getDate().getMonth())));
     }
 
-    /*public static Supplier<Map<String, Double>> t12_Map_Total(Map<String, Map<Month, List<Transaction>>> map) {
-        return () -> {
-            final Map<String, Double> m = new HashMap<>();
-
-            map.forEach((key, value) ->
-                m.put(key, value.values().parallelStream().flatMap(Collection::stream).mapToDouble(Transaction::getValue).sum())
-            );
-
-            return m;
-        };
-    }*/
-
-    public static Supplier<Map<String, Double>> t12_Map_Total(Map<String, Map<Month, List<Transaction>>> map) {
-        return () -> {
-            return map.entrySet().stream().collect(toMap(Function.identity(), e -> e.getValue().values().stream().mapToDouble(t -> t.stream().mapToDouble(Transaction::getValue).sum()).sum());
-        };
+    public static Supplier<Map<String, Double>> t12_Map_2(Map<String, Map<Month, List<Transaction>>> map) {
+        return () -> map.entrySet().parallelStream().collect(toMap(
+                Map.Entry::getKey,
+                e -> e.getValue().values().stream()
+                        .mapToDouble(l -> l.stream().mapToDouble(Transaction::getValue)
+                                .reduce(0, (a, b) -> a + b)).sum(),
+                (Double a, Double b) -> a + b)
+        );
     }
 
-    public static Supplier<Map<String, Double>> t12_Concurrent_Total(ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>> map) {
-        return () -> {
-            final ConcurrentMap<String, Double> m = new ConcurrentHashMap<>();
-
-            map.forEach((key, value) ->
-                m.put(key, value.values().parallelStream().flatMap(Collection::stream).mapToDouble(Transaction::getValue).sum())
-            );
-
-            return m;
-        };
+    public static Supplier<ConcurrentMap<String, Double>> t12_ConcurrentMap_2(ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>> map) {
+        return () -> map.entrySet().parallelStream().collect(toConcurrentMap(
+                ConcurrentMap.Entry::getKey,
+                e -> e.getValue().values().stream()
+                        .mapToDouble(l -> l.stream().mapToDouble(Transaction::getValue)
+                                .reduce(0, (a, b) -> a + b)).sum(),
+                (Double a, Double b) -> a + b)
+        );
     }
 }

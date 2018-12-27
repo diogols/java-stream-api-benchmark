@@ -67,14 +67,14 @@ public class BJS {
 
         // T12
 
-        SimpleEntry<Double, Map<String, Map<Month, List<Transaction>>>> t12_map = BJSUtils.testBox(BJSUtils.t12_Map(transactions));
-        SimpleEntry<Double, ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_concurrent = BJSUtils.testBox(BJSUtils.t12_Concurrent(transactions));
+        SimpleEntry<Double, Map<String, Map<Month, List<Transaction>>>> t12_map = BJSUtils.testBox(BJSUtils.t12_Map_1(transactions));
+        SimpleEntry<Double, ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_concurrent = BJSUtils.testBox(BJSUtils.t12_ConcurrentMap_1(transactions));
 
         System.out.println(t12_map.getKey());
         System.out.println(t12_concurrent.getKey());
 
-        SimpleEntry<Double, Map<String, Double>> t12_map_total = BJSUtils.testBox(BJSUtils.t12_Map_Total(t12_map.getValue()));
-        SimpleEntry<Double, Map<String, Double>> t12_concurrent_total = BJSUtils.testBox(BJSUtils.t12_Concurrent_Total(t12_concurrent.getValue()));
+        SimpleEntry<Double, Map<String, Double>> t12_map_total = BJSUtils.testBox(BJSUtils.t12_Map_2(t12_map.getValue()));
+        SimpleEntry<Double, Map<String, Double>> t12_concurrent_total = BJSUtils.testBox(BJSUtils.t12_ConcurrentMap_2(t12_concurrent.getValue()));
 
         System.out.println(t12_map_total.getKey());
         System.out.println(t12_concurrent_total.getKey());
