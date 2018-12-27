@@ -1,13 +1,16 @@
 import model.BJSUtils;
 import model.Transaction;
 
+import java.time.Month;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 public class BJS {
     public static void main(String[] args) {
-        List<Transaction> transactions = BJSUtils.load("transCaixa1M.txt", BJSUtils.toTransaction);
+        List<Transaction> transactions = BJSUtils.load("transCaixa6M.txt", BJSUtils.toTransaction);
 
         // SimpleEntry<Double, Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_8 = BJSUtils.testBox(BJSUtils.t6_8(list));
         // SimpleEntry<Double, Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_7 = BJSUtils.testBox(BJSUtils.t6_7(list));
@@ -60,5 +63,23 @@ public class BJS {
 //        System.out.println(t5_8.getKey());
 //        t5_8.getValue().stream().limit(10).forEach(System.out::println);
 
+
+
+        // T12
+
+        SimpleEntry<Double, Map<String, Map<Month, List<Transaction>>>> t12_map = BJSUtils.testBox(BJSUtils.t12_Map(transactions));
+        SimpleEntry<Double, ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_concurrent = BJSUtils.testBox(BJSUtils.t12_Concurrent(transactions));
+
+        System.out.println(t12_map.getKey());
+        System.out.println(t12_concurrent.getKey());
+
+        SimpleEntry<Double, Map<String, Double>> t12_map_total = BJSUtils.testBox(BJSUtils.t12_Map_Total(t12_map.getValue()));
+        SimpleEntry<Double, Map<String, Double>> t12_concurrent_total = BJSUtils.testBox(BJSUtils.t12_Concurrent_Total(t12_concurrent.getValue()));
+
+        System.out.println(t12_map_total.getKey());
+        System.out.println(t12_concurrent_total.getKey());
+
+        System.out.println(t12_map_total.getValue().get("2"));
+        System.out.println(t12_concurrent_total.getValue().get("2"));
     }
 }
