@@ -280,18 +280,12 @@ public final class BJSUtils {
         };
     }
 
-    /*
     public static Supplier<Double> t7_8_2(List<Transaction> transactions) {
         return () -> transactions.stream().mapToDouble(Transaction::getValue).sum();
     }
-    */
-
-    public static Supplier<Double> t7_8_2(List<Transaction> transactions) {
-        return () -> transactions.stream().map(Transaction::getValue).reduce(0.0, Double::sum);
-    }
 
     public static Supplier<Double> t7_8_3(List<Transaction> transactions) {
-        return () -> transactions.parallelStream().map(Transaction::getValue).reduce(0.0, Double::sum);
+        return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
     }
 
     public static Supplier<String> t8_7(List<Transaction> transactions) {

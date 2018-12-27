@@ -1,6 +1,8 @@
 import model.BJSUtils;
 import model.Transaction;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Month;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -8,10 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class BJS {
     public static void main(String[] args) {
-        List<Transaction> transactions = BJSUtils.load("transCaixa6M.txt", BJSUtils.toTransaction);
+        List<Transaction> transactions = BJSUtils.load("transCaixa1M.txt", BJSUtils.toTransaction);
 
         // SimpleEntry<Double, Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_8 = BJSUtils.testBox(BJSUtils.t6_8(list));
         // SimpleEntry<Double, Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_7 = BJSUtils.testBox(BJSUtils.t6_7(list));
@@ -25,10 +32,10 @@ public class BJS {
         // System.out.println(t6_8.getKey());
         // System.out.println(t6_7.getKey());
 
-//        System.out.printf("%f\n",BJSUtils.t7_8_1(list).get());
-//        System.out.printf("%f\n",BJSUtils.t7_8_2(list).get());
-//        System.out.printf("%f\n",BJSUtils.t7_8_3(list).get());
-//        System.out.printf("%f\n",BJSUtils.t7_7(list).get());
+        System.out.printf("%f\n",BJSUtils.t7_7(transactions).get());
+        System.out.printf("%f\n",BJSUtils.t7_8_1(transactions).get());
+        System.out.printf("%f\n",BJSUtils.t7_8_2(transactions).get());
+        System.out.printf("%f\n",BJSUtils.t7_8_3(transactions).get());
 
 //        SimpleEntry<Double, String> t8_7 = BJSUtils.testBox(0, BJSUtils.t8_7(list));
 //        SimpleEntry<Double, String> t8_8 = BJSUtils.testBox(0, BJSUtils.t8_8(list));
@@ -77,7 +84,7 @@ public class BJS {
 
 
         // T12
-
+        /*
         SimpleEntry<Double, Map<String, Map<Month, List<Transaction>>>> t12_map = BJSUtils.testBox(0, BJSUtils.t12_Map_1(transactions));
         SimpleEntry<Double, ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_concurrent = BJSUtils.testBox(0, BJSUtils.t12_ConcurrentMap_1(transactions));
 
@@ -95,16 +102,32 @@ public class BJS {
                 System.out.println("FUCK");
             }
         }
-
-        /*
-        double sum7 = 0;
-        for (Transaction t : transactions) {
-            sum7 += t.getValue();
-        }
-
-        System.out.printf("%f\n", sum7);
-        System.out.printf("%f\n", transactions.stream().map(Transaction::getValue).reduce(0.0, Double::sum));
         */
 
+        // DOUBLE PRECISION BENCHMARK
+        // https://rmannibucau.metawerx.net/post/java-stream-float-widening
+        /*
+        double sumPrimitive = 0;
+        for (Transaction t : transactions) {
+            sumPrimitive += t.getValue();
+        }
+
+        Double sumDouble = new Double(0);
+        for (Transaction t : transactions) {
+            sumDouble += new Double(t.getValue());
+        }
+
+        double sumMapReduce = transactions.stream().map(Transaction::getValue).reduce(0.0, Double::sum);
+
+        double sumMapToDoubleSum = transactions.stream().mapToDouble(Transaction::getValue).sum();
+
+        double sumSummingDouble = transactions.stream().collect(Collectors.summingDouble(Transaction::getValue));
+
+        System.out.printf("double +        = %f\n", sumPrimitive);
+        System.out.printf("Double +        = %f\n", sumDouble);
+        System.out.printf("map reduce      = %f\n", sumMapReduce);
+        System.out.printf("mapToDouble sum = %f\n", sumMapToDoubleSum);
+        System.out.printf("summingDouble   = %f\n", sumSummingDouble);
+        */
     }
 }
