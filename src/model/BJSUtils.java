@@ -12,6 +12,7 @@ import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.AbstractMap.SimpleEntry;
 
@@ -20,6 +21,7 @@ import static java.util.stream.Collectors.*;
 
 public final class BJSUtils {
     private final static int RUNS = 10;
+    private final static int MIN = 1, MAX = 9999;
 
     public static <R> List<R> load(final String filename, final Function<String, R> function) {
         List<R> list = new ArrayList<>();
@@ -31,7 +33,23 @@ public final class BJSUtils {
         return list;
     }
 
-    public static Function<String, Transaction> toTransaction = (line) -> {
+    public static <R> SimpleEntry<Double, R> testBox(Supplier<? extends R> supplier)  {
+        return testBox(RUNS, supplier);
+    }
+
+    public static <R> SimpleEntry<Double, R> testBox(int runs, Supplier<? extends R> supplier)  {
+        // warm up
+        for(int i = 1 ; i <= runs; i++) {
+            supplier.get();
+        }
+        System.gc();
+        Crono.start();
+        R r = supplier.get();
+        Double time = Crono.stop();
+        return new SimpleEntry<>(time, r);
+    }
+
+    public static Function<String, Transaction> parseTransaction = (line) -> {
         final String[] fields = line.split("/");
         final String id = fields[0].trim();
         final String counterId = fields[1].trim();
@@ -44,6 +62,7 @@ public final class BJSUtils {
         }
 
         final String[] dMYHMS = fields[3].split("T");
+
         final String[] dMY = dMYHMS[0].split(":");
         final String[] hM = dMYHMS[1].split(":");
 
@@ -68,24 +87,14 @@ public final class BJSUtils {
 
     public static Comparator<Transaction> compareTransactionsById = Comparator.comparing(Transaction::getId);
 
-    public static <R> SimpleEntry<Double,R> testBox(int runs, Supplier<? extends R> supplier)  {
-        // warm up
-        for(int i = 1 ; i <= runs; i++) {
-            supplier.get();
-        }
-        System.gc();
-        Crono.start();
-        R r = supplier.get();
-        Double time = Crono.stop();
-        return new SimpleEntry<>(time, r);
-    }
+    /*
+     * T1: Criar um double[], uma DoubleStream e uma Stream<Double> contendo desde 1M até 8M dos valores das transacções
+     * registadas em List<TransCaixa>. Usando para o array um ciclo for() e um forEach() e para as
+     * streams as operações respectivas e processamento sequencial e paralelo, comparar para cada caso os
+     * tempos de cálculo da soma e da média desses valores.
+     */
 
-    public static <R> SimpleEntry<Double,R> testBox(Supplier<? extends R> supplier)  {
-       return testBox(RUNS, supplier);
-    }
-
-    // T1
-
+    // double[] for()
     public static Supplier<double[]> t1_7_1(final List<Transaction> transactions) {
         return () -> {
             final int size = transactions.size();
@@ -98,6 +107,7 @@ public final class BJSUtils {
         };
     }
 
+    // double[] forEach()
     public static Supplier<double[]> t1_7_2(List<Transaction> transactions) {
         return () -> {
             final double[] values = new double[transactions.size()];
@@ -110,23 +120,100 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<Stream<Double>> t1_8_1(List<Transaction> transactions) {
-        return () -> transactions.stream().map(Transaction::getValue);
-    }
-
-    public static Supplier<DoubleStream> t1_8_2(List<Transaction> transactions) {
+    // DoubleStream stream()
+    public static Supplier<DoubleStream> t1_8_1_1(List<Transaction> transactions) {
         return () -> transactions.stream().mapToDouble(Transaction::getValue);
     }
 
-    public static Supplier<Stream<Double>> t1_8_3(List<Transaction> transactions) {
-        return () -> transactions.parallelStream().map(Transaction::getValue);
-    }
-
-    public static Supplier<DoubleStream> t1_8_4(List<Transaction> transactions) {
+    // DoubleStream parallelStream()
+    public static Supplier<DoubleStream> t1_8_1_2(List<Transaction> transactions) {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
     }
 
+    // Stream<Double> stream()
+    public static Supplier<Stream<Double>> t1_8_2_1(List<Transaction> transactions) {
+        return () -> transactions.stream().map(Transaction::getValue);
+    }
 
+    // Stream<Double> parallelStream()
+    public static Supplier<Stream<Double>> t1_8_2_2(List<Transaction> transactions) {
+        return () -> transactions.parallelStream().map(Transaction::getValue);
+    }
+
+    /*
+     *  T2: Considere o problema típico de a partir de um data set de dada dimensão se pretenderem criar dois outros
+     *  data sets correspondentes aos 30% primeiros e aos 30% últimos do data set original segundo um dado critério.
+     *  Defina sobre TransCaixa um critério de comparação que envolva datas ou tempos e use-o neste teste,
+     *  em que se pretende comparar a solução com streams sequenciais e paralelas às soluções usando List<> e TreeSet<>.
+     */
+
+    // ...
+
+    /*
+     * T3: Crie uma IntStream, um int[] e uma List<Integer> com de 1M a 8M de números aleatórios de valores
+     * entre 1 e 9999. Determine o esforço de eliminar duplicados em cada situação.
+     */
+
+    public static IntStream getIntStream(final int size) {
+        return getIntStream(MIN, MAX, size);
+    }
+
+    public static int[] getIntArray(final int size) {
+        return getIntArray(MIN, MAX, size);
+    }
+
+    public static  List<Integer> getListInteger(final int size) {
+        return getListInteger(MIN, MAX, size);
+    }
+
+    public static  IntStream getIntStream(final int min, final int max, final int size) {
+        return new Random().ints(size, min, max + 1);
+    }
+
+    public static  int[] getIntArray(final int min, final int max, final int size) {
+        return new Random().ints(size, min, max + 1).toArray();
+    }
+
+    public static List<Integer> getListInteger(final int min, final int max, final int size) {
+        return new Random().ints(size, min, max + 1).boxed().collect(toList());
+    }
+
+    public static Supplier<IntStream> t3(IntStream intStream) {
+        return intStream::distinct;
+    }
+
+    public static Supplier<int[]> t3(int[] ints) {
+        return () -> {
+            int[] unique = new int[ints.length];
+
+            int i;
+            boolean isUnique;
+            int k = 0;
+            for (int anInt : ints) {
+                i = anInt;
+
+                isUnique = true;
+                for (int j : unique) {
+                   if (i == j) {
+                       isUnique = false;
+                       break;
+                   }
+                }
+                if (isUnique) {
+                    unique[k++] = i;
+                }
+            }
+
+            System.arraycopy(unique, 0, unique, 0, k);
+            return unique;
+        };
+    }
+
+    public static Supplier<List<Integer>> t3(List<Integer> integers) {
+       return () -> {
+           return integers;
+       };
+    }
 
 
     // T5
