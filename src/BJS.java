@@ -1,6 +1,7 @@
 import model.BJSUtils;
 import model.Transaction;
 
+import java.math.BigDecimal;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,7 @@ import static java.util.stream.Collectors.toList;
 
 public class BJS {
     public static void main(String[] args) {
-        List<Transaction> transactions = BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction);
+        List<Transaction> transactions = BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction);
 
         // DOUBLE PRECISION BENCHMARK
         // https://rmannibucau.metawerx.net/post/java-stream-float-widening
@@ -39,15 +40,29 @@ public class BJS {
         */
 
         //T3
-        int[] random = BJSUtils.generateArrayInt(2000000);
+        //int[] random = BJSUtils.generateArrayInt(2000000);
 
-        SimpleEntry<Double, IntStream> intStream = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random)));
-        SimpleEntry<Double, int[]> intArray = BJSUtils.testBox(0, BJSUtils.t3(random));
-        SimpleEntry<Double, List<Integer>> listInteger = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random).boxed().collect(toList())));
+        //SimpleEntry<Double, IntStream> intStream = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random)));
+        //SimpleEntry<Double, int[]> intArray = BJSUtils.testBox(0, BJSUtils.t3(random));
+        //SimpleEntry<Double, List<Integer>> listInteger = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random).boxed().collect(toList())));
 
-        System.out.println(intStream.getKey() + " " + isDistinct(intStream.getValue().boxed().collect(toList())));
-        System.out.println(intArray.getKey() + " " + isDistinct(Arrays.stream(intArray.getValue()).boxed().collect(toList())));
-        System.out.println(listInteger.getKey() + " " + isDistinct(listInteger.getValue()));
+        //System.out.println(intStream.getKey() + " " + isDistinct(intStream.getValue().boxed().collect(toList())));
+        //System.out.println(intArray.getKey() + " " + isDistinct(Arrays.stream(intArray.getValue()).boxed().collect(toList())));
+        //System.out.println(listInteger.getKey() + " " + isDistinct(listInteger.getValue()));
+
+        //T4
+
+        double[] values = BJSUtils.t1_7_1(transactions).get();
+
+        SimpleEntry<Double, Double> t4_8_1_1 = BJSUtils.testBox(0, BJSUtils.t4_8_1_1(values));
+        SimpleEntry<Double, Double> t4_8_1_2 = BJSUtils.testBox(0, BJSUtils.t4_8_1_2(values));
+        SimpleEntry<Double, Double> t4_8_2_1 = BJSUtils.testBox(0, BJSUtils.t4_8_2_1(values));
+        SimpleEntry<Double, Double> t4_8_2_2 = BJSUtils.testBox(0, BJSUtils.t4_8_2_2(values));
+
+        System.out.println(t4_8_1_1.getKey() + " " + t4_8_1_1.getValue());
+        System.out.println(t4_8_1_2.getKey() + " " + t4_8_1_2.getValue());
+        System.out.println(t4_8_2_1.getKey() + " " + t4_8_2_1.getValue());
+        System.out.println(t4_8_2_2.getKey() + " " + t4_8_2_2.getValue());
 
     }
 

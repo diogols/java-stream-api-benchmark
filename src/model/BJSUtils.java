@@ -1,6 +1,7 @@
 package model;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
@@ -9,6 +10,7 @@ import java.time.Month;
 import java.time.temporal.IsoFields;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.DoubleStream;
@@ -215,6 +217,30 @@ public final class BJSUtils {
        };
     }
 
+    /*
+     * T4: Defina um método static, uma BiFunction e uma expressão lambda que dados dois numeros reais calculam o resultado
+     * da sua multiplicação. Crie em seguida  um double[] com sucessivamente 1M, 2M, 4M e 8M de reais resultantes
+     * valores de caixa dos ficheiros de transacções. Finalmente processe o array usando streams, sequenciais
+     * e paralelas, comparando os tempos de invocação e aplicação do método versus a bifunction e a expressão lambda explícita.
+     */
+
+    private static BiFunction<Double, Double, Double> multiplyDouble = (a, b) -> a * b;
+
+    public static Supplier<Double> t4_8_1_1(double[] values) {
+        return () -> Arrays.stream(values).reduce(0, (a, b) -> multiplyDouble.apply(a, b));
+    }
+
+    public static Supplier<Double> t4_8_1_2(double[] values) {
+        return () -> Arrays.stream(values).parallel().reduce(0, (a, b) -> multiplyDouble.apply(a, b));
+    }
+
+    public static Supplier<Double> t4_8_2_1(double[] values) {
+        return () -> Arrays.stream(values).reduce(0, (a, b) -> a * b);
+    }
+
+    public static Supplier<Double> t4_8_2_2(double[] values) {
+        return () -> Arrays.stream(values).parallel().reduce(0, (a, b) -> a * b);
+    }
 
     // T5
 
