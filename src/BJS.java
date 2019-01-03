@@ -39,12 +39,14 @@ public class BJS {
         */
 
         //T3
-        SimpleEntry<Double, IntStream> intStream = BJSUtils.testBox(0, BJSUtils.t3(BJSUtils.getIntStream(8000000)));
-        SimpleEntry<Double, int[]> intArray = BJSUtils.testBox(0, BJSUtils.t3(BJSUtils.getIntArray(8000000)));
-        SimpleEntry<Double, List<Integer>> listInteger = BJSUtils.testBox(0, BJSUtils.t3(BJSUtils.getListInteger(8000000)));
+        int[] random = BJSUtils.generateArrayInt(2000000);
+
+        SimpleEntry<Double, IntStream> intStream = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random)));
+        SimpleEntry<Double, int[]> intArray = BJSUtils.testBox(0, BJSUtils.t3(random));
+        SimpleEntry<Double, List<Integer>> listInteger = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random).boxed().collect(toList())));
 
         System.out.println(intStream.getKey() + " " + isDistinct(intStream.getValue().boxed().collect(toList())));
-        System.out.println(intArray.getKey() + " " + isDistinct( Arrays.stream(intArray.getValue()).boxed().collect(toList())));
+        System.out.println(intArray.getKey() + " " + isDistinct(Arrays.stream(intArray.getValue()).boxed().collect(toList())));
         System.out.println(listInteger.getKey() + " " + isDistinct(listInteger.getValue()));
 
     }

@@ -154,28 +154,12 @@ public final class BJSUtils {
      * entre 1 e 9999. Determine o esforço de eliminar duplicados em cada situação.
      */
 
-    public static IntStream getIntStream(final int size) {
-        return getIntStream(MIN, MAX, size);
+    public static int[] generateArrayInt(final int size) {
+        return generateArrayInt(MIN, MAX, size);
     }
 
-    public static int[] getIntArray(final int size) {
-        return getIntArray(MIN, MAX, size);
-    }
-
-    public static  List<Integer> getListInteger(final int size) {
-        return getListInteger(MIN, MAX, size);
-    }
-
-    public static  IntStream getIntStream(final int min, final int max, final int size) {
-        return new Random().ints(size, min, max + 1);
-    }
-
-    public static  int[] getIntArray(final int min, final int max, final int size) {
+    public static int[] generateArrayInt(final int min, final int max, final int size) {
         return new Random().ints(size, min, max + 1).toArray();
-    }
-
-    public static List<Integer> getListInteger(final int min, final int max, final int size) {
-        return new Random().ints(size, min, max + 1).boxed().collect(toList());
     }
 
     public static Supplier<IntStream> t3(IntStream intStream) {
@@ -184,34 +168,50 @@ public final class BJSUtils {
 
     public static Supplier<int[]> t3(int[] ints) {
         return () -> {
-            int[] unique = new int[ints.length];
+            final int size = ints.length;
+            final int[] unique = new int[size];
 
-            int i;
-            boolean isUnique;
+            int j;
+            int anInt;
             int k = 0;
-            for (int anInt : ints) {
-                i = anInt;
 
-                isUnique = true;
-                for (int j : unique) {
-                   if (i == j) {
-                       isUnique = false;
+
+            for (int i = 0; i < size; i++) {
+                anInt = ints[i];
+                for (j = i + 1; j < size; j++) {
+                   if (ints[j] == anInt) {
                        break;
                    }
                 }
-                if (isUnique) {
-                    unique[k++] = i;
+                if (j == size) {
+                    unique[k++] = anInt;
                 }
             }
 
-            System.arraycopy(unique, 0, unique, 0, k);
-            return unique;
+            return Arrays.copyOf(unique, k);
         };
     }
 
     public static Supplier<List<Integer>> t3(List<Integer> integers) {
        return () -> {
-           return integers;
+           final int size = integers.size();
+           final List<Integer> unique = new ArrayList<>();
+
+           int j;
+           int anInt;
+
+           for (int i = 0; i < size; i++) {
+               anInt = integers.get(i);
+               for (j = i + 1; j < size; j++) {
+                   if (integers.get(j) == anInt) {
+                       break;
+                   }
+               }
+               if (j == size) {
+                   unique.add(anInt);
+               }
+           }
+           return unique;
        };
     }
 
