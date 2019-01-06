@@ -54,19 +54,15 @@ public class BJS {
 
         double[] values = BJSUtils.t1_7_1(transactions).get();
 
-        SimpleEntry<Double, Double> t4_8_1_1 = BJSUtils.testBox(0, BJSUtils.t4_8_1_1(values));
-        SimpleEntry<Double, Double> t4_8_1_2 = BJSUtils.testBox(0, BJSUtils.t4_8_1_2(values));
-        SimpleEntry<Double, Double> t4_8_2_1 = BJSUtils.testBox(0, BJSUtils.t4_8_2_1(values));
-        SimpleEntry<Double, Double> t4_8_2_2 = BJSUtils.testBox(0, BJSUtils.t4_8_2_2(values));
+        SimpleEntry<Double, Double> t4_8_1_1 = BJSUtils.testBox(BJSUtils.t4_8_1_1(values));
+        SimpleEntry<Double, Double> t4_8_1_2 = BJSUtils.testBox(BJSUtils.t4_8_1_2(values));
+        SimpleEntry<Double, Double> t4_8_2_1 = BJSUtils.testBox(BJSUtils.t4_8_2_1(values));
+        SimpleEntry<Double, Double> t4_8_2_2 = BJSUtils.testBox(BJSUtils.t4_8_2_2(values));
 
         System.out.println(t4_8_1_1.getKey() + " " + t4_8_1_1.getValue());
         System.out.println(t4_8_1_2.getKey() + " " + t4_8_1_2.getValue());
         System.out.println(t4_8_2_1.getKey() + " " + t4_8_2_1.getValue());
         System.out.println(t4_8_2_2.getKey() + " " + t4_8_2_2.getValue());
 
-    }
-
-    private static boolean isDistinct(List<Integer> integers) {
-        return integers.stream().distinct().collect(toList()).size() == integers.size();
     }
 }
