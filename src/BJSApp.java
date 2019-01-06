@@ -1,17 +1,22 @@
+import controller.BJSController;
 import model.BJSUtils;
-import model.Transaction;
+import view.BJSView;
 
-import java.math.BigDecimal;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
+public class BJSApp {
 
-import static java.util.stream.Collectors.toList;
-
-public class BJS {
     public static void main(String[] args) {
-        List<Transaction> transactions = BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction);
+        BJSView view = new BJSView();
+        BJSUtils model = new BJSUtils();
+        BJSController controller = new BJSController();
+
+        controller.setView(view);
+        controller.setModel(model);
+        controller.startFlow();
+
+
+
+
+        //List<Transaction> transactions = BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction);
 
         // DOUBLE PRECISION BENCHMARK
         // https://rmannibucau.metawerx.net/post/java-stream-float-widening
@@ -52,7 +57,7 @@ public class BJS {
 
         //T4
 
-        double[] values = BJSUtils.t1_7_1(transactions).get();
+        /*double[] values = BJSUtils.t1_7_1(transactions).get();
 
         SimpleEntry<Double, Double> t4_8_1_1 = BJSUtils.testBox(BJSUtils.t4_8_1_1(values));
         SimpleEntry<Double, Double> t4_8_1_2 = BJSUtils.testBox(BJSUtils.t4_8_1_2(values));
@@ -62,7 +67,7 @@ public class BJS {
         System.out.println(t4_8_1_1.getKey() + " " + t4_8_1_1.getValue());
         System.out.println(t4_8_1_2.getKey() + " " + t4_8_1_2.getValue());
         System.out.println(t4_8_2_1.getKey() + " " + t4_8_2_1.getValue());
-        System.out.println(t4_8_2_2.getKey() + " " + t4_8_2_2.getValue());
+        System.out.println(t4_8_2_2.getKey() + " " + t4_8_2_2.getValue());*/
 
     }
 }

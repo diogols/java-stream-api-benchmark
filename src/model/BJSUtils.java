@@ -26,6 +26,7 @@ public final class BJSUtils {
 
     public static <R> List<R> load(final String filename, final Function<String, R> function) {
         List<R> list = new ArrayList<>();
+
         try (Stream<String> stream = Files.lines(Paths.get(filename))) {
             list = stream.map(function).collect(toList());
         } catch(IOException e) {
@@ -39,14 +40,16 @@ public final class BJSUtils {
     }
 
     public static <R> SimpleEntry<Double, R> testBox(int runs, Supplier<? extends R> supplier)  {
-        // warm up
         for(int i = 1 ; i <= runs; i++) {
             supplier.get();
         }
+
         System.gc();
         Crono.start();
+
         R r = supplier.get();
         Double time = Crono.stop();
+
         return new SimpleEntry<>(time, r);
     }
 
@@ -88,7 +91,9 @@ public final class BJSUtils {
 
     public static Comparator<Transaction> compareTransactionsById = Comparator.comparing(Transaction::getId);
 
-    /*
+
+    /**************************************************** T1 ***********************************************************
+     *
      * T1: Criar um double[], uma DoubleStream e uma Stream<Double> contendo desde 1M até 8M dos valores das transacções
      * registadas em List<TransCaixa>. Usando para o array um ciclo for() e um forEach() e para as
      * streams as operações respectivas e processamento sequencial e paralelo, comparar para cada caso os
@@ -141,7 +146,8 @@ public final class BJSUtils {
         return () -> transactions.parallelStream().map(Transaction::getValue);
     }
 
-    /*
+    /**************************************************** T2 ***********************************************************
+     *
      *  T2: Considere o problema típico de a partir de um data set de dada dimensão se pretenderem criar dois outros
      *  data sets correspondentes aos 30% primeiros e aos 30% últimos do data set original segundo um dado critério.
      *  Defina sobre TransCaixa um critério de comparação que envolva datas ou tempos e use-o neste teste,
@@ -150,7 +156,8 @@ public final class BJSUtils {
 
     // ...
 
-    /*
+    /**************************************************** T3 ***********************************************************
+     *
      * T3: Crie uma IntStream, um int[] e uma List<Integer> com de 1M a 8M de números aleatórios de valores
      * entre 1 e 9999. Determine o esforço de eliminar duplicados em cada situação.
      */
@@ -216,11 +223,13 @@ public final class BJSUtils {
        };
     }
 
-    /*
-     * T4: Defina um método static, uma BiFunction e uma expressão lambda que dados dois numeros reais calculam o resultado
-     * da sua multiplicação. Crie em seguida  um double[] com sucessivamente 1M, 2M, 4M e 8M de reais resultantes
-     * valores de caixa dos ficheiros de transacções. Finalmente processe o array usando streams, sequenciais
-     * e paralelas, comparando os tempos de invocação e aplicação do método versus a bifunction e a expressão lambda explícita.
+    /**************************************************** T4 ***********************************************************
+     *
+     * T4: Defina um método static, uma BiFunction e uma expressão lambda que dados dois numeros reais calculam o
+     * resultado da sua multiplicação. Crie em seguida  um double[] com sucessivamente 1M, 2M, 4M e 8M de reais
+     * resultantes valores de caixa dos ficheiros de transacções. Finalmente processe o array usando streams,
+     * sequenciais e paralelas, comparando os tempos de invocação e aplicação do método versus a bifunction e a
+     * expressão lambda explícita.
      */
 
     private static BiFunction<Double, Double, Double> multiplyDouble = (a, b) -> a * b;
@@ -241,7 +250,12 @@ public final class BJSUtils {
         return () -> Arrays.stream(values).parallel().reduce(0, (a, b) -> a * b);
     }
 
-    // T5
+    /**************************************************** T5 ***********************************************************
+     *
+     * Usando os dados disponíveis crie um teste que permita comparar se dada a List<TransCaixa> e um
+     * Comparator<TransCaixa>, que deverá ser definido, é mais eficiente, usando streams, fazer o collect para um
+     * TreeSet<TransCaixa> ou usar a operação sorted() e fazer o collect para uma nova List<TransCaixa>.
+     */
 
     public static Supplier<Set<Transaction>> t5_7(List<Transaction> transactions, Comparator<Transaction> comparator) {
         return () -> new TreeSet<>(comparator) {{ addAll(transactions); }};
@@ -251,9 +265,15 @@ public final class BJSUtils {
         return () -> transactions.stream().sorted(comparator).collect(toList());
     }
 
-    // T6
+    /**************************************************** T6 ***********************************************************
+     *
+     * Considere o exemplo prático das aulas de streams em que se criou uma tabela com as transacções catalogadas por
+     * Mês, Dia, Hora efectivos. Codifique em JAVA 7 o problema que foi resolvido com streams e compare tempos de
+     * execução. Faça o mesmo para um Map<Dia_da_Semana, Hora>.
+     */
 
-    public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_8_1(List<Transaction> transactions) {
+    public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>>
+    t6_8_1(List<Transaction> transactions) {
         return () -> transactions.stream().collect(groupingBy(t -> t.getDate().getMonth(),
                 groupingBy(t -> t.getDate().getDayOfMonth(),
                         groupingBy(t -> t.getDate().getHour()))));
@@ -291,7 +311,8 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>> t6_7_1(List<Transaction> transactions) {
+    public static Supplier<Map<Month, Map<Integer, Map<Integer, List<Transaction>>>>>
+    t6_7_1(List<Transaction> transactions) {
         return () -> {
             Map<Month, Map<Integer, Map<Integer, List<Transaction>>>> map = new HashMap<>();
             Month month;
@@ -346,8 +367,13 @@ public final class BJSUtils {
                 groupingBy(t -> t.getDate().getHour())));
     }
 
-	
-	// T7
+
+    /**************************************************** T7 ***********************************************************
+     *
+     * Usando List<TransCaixa> e Spliterator<TransCaixa> crie 4 partições cada uma com 1⁄4 do data set. Compare os
+     * tempos de processamento de calcular a soma do valor das transacções com as quatro partições ou com o data set
+     * inteiro, quer usando List<> e forEach() quer usando streams sequenciais e paralelas.
+     */
     public static Supplier<Double> t7_7(List<Transaction> transactions) {
         return () -> {
             double sum = 0;
@@ -400,11 +426,13 @@ public final class BJSUtils {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
     }
 
+    /**************************************************** T8 ***********************************************************
+     *
+     * Codifique em JAVA 7 e em Java 8 com streams, o problema de, dada a List<TransCaixa>, determinar o código da
+     * transacção de maior valor realizada num a dada data válida entre as 16 e as 22 horas.
+     */
     public static Supplier<String> t8_7(List<Transaction> transactions) {
         return () -> {
-            final int startHour = 16;
-            final int endHour = 22;
-
             String id = "";
             double value = 0;
 
@@ -421,15 +449,13 @@ public final class BJSUtils {
 
     public static Supplier<String> t8_8(List<Transaction> transactions) {
         return () -> {
-            final int startHour = 16;
-            final int endHour = 22;
-
             // i could use a Transaction instance but this seems faster
             var transaction = new Object() { String id; double value = 0; };
 
             // i am excluding 22:00:00 just for the sake of code simplicity
             transactions.forEach(t -> {
-                        if (t.getDate().getHour() >= 16 && t.getDate().getHour() < 22 && t.getValue() > transaction.value) {
+                        if (t.getDate().getHour() >= 16 && t.getDate().getHour() <
+                                22 && t.getValue() > transaction.value) {
                             transaction.value = t.getValue();
                             transaction.id = t.getId();
                         }
@@ -439,8 +465,12 @@ public final class BJSUtils {
         };
     }
 
-    // T9
-
+    /**************************************************** T9 ***********************************************************
+     *
+     * Crie uma List<List<TransCaixa>> em que cada lista elemento da lista contém todas as transacções realizadas nos
+     * dias de 1 a 7 de uma dada semana do ano (1 a 52/53). Codifique em JAVA 7 e em Java 8 com streams, o problema de,
+     * dada tal lista, se apurar o total facturado nessa semana.
+     */
     public static Supplier<Double> t9_7(List<Transaction> transactions, int weekOfYear) {
         return t9_7(toWeekDayLists(transactions).get(weekOfYear));
     }
@@ -464,7 +494,8 @@ public final class BJSUtils {
     }
 
     public static Supplier<Double> t9_8(List<List<Transaction>> transactions) {
-        return () -> transactions.stream().map(l -> l.stream().map(Transaction::getValue).reduce(0.0, Double::sum)).reduce(0.0, Double::sum);
+        return () -> transactions.stream().map(l -> l.stream().map(Transaction::getValue)
+                .reduce(0.0, Double::sum)).reduce(0.0, Double::sum);
     }
 
     // Create another method with Java 8 maybe
@@ -493,15 +524,13 @@ public final class BJSUtils {
         return weekDayList;
     }
 
-    // T10
-
-    /*
-    T10: Admitindo que o IVA a entregar por transacção é de 12% para transacções menores que 20 Euros,
-    20% entre 20 e 29 e 23% para valores superiores,
-    crie uma tabela com o valor de IVA total a pagar por mês.
-    Compare as soluções em JAVA 7 e Java 8.
+    /**************************************************** T10 **********************************************************
+     *
+     * Admitindo que o IVA a entregar por transacção é de 12% para transacções menores que 20 Euros,
+     * 20% entre 20 e 29 e 23% para valores superiores,
+     * crie uma tabela com o valor de IVA total a pagar por mês.
+     * Compare as soluções em JAVA 7 e Java 8.
      */
-
     public static Supplier<List<Double>> t10_7(List<Transaction> transactions) {
         return () -> {
             double value;
@@ -531,7 +560,8 @@ public final class BJSUtils {
 
     // should return toList() directly but i do not know how
     public static Supplier<List<Double>> t10_8(List<Transaction> transactions) {
-        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(), TreeMap::new, summingDouble(t -> {
+        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(),
+                TreeMap::new, summingDouble(t -> {
             if (t.getValue() > 29) {
                 return t.getValue() * 0.23;
             } else if (t.getValue() < 20) {
@@ -542,14 +572,20 @@ public final class BJSUtils {
         }))).values());
     }
 
-    // T12
 
+    /**************************************************** T12 **********************************************************
+     *
+     * Considerando List<TransCaixa> criar uma tabela que associa a cada no de caixa uma tabela contendo para cada mês
+     * as transacções dessa caixa. Desenvolva duas soluções, uma usando um Map<> como resultado e a outra usando um
+     * ConcurrentMap(). Em ambos os casos calcule depois o total facturado por caixa em Java 8 e em Java 9.
+     */
     public static Supplier<Map<String, Map<Month, List<Transaction>>>> t12_Map_1(List<Transaction> transactions) {
         return () -> transactions.parallelStream().collect(groupingBy(Transaction::getCounterId,
                 groupingBy(t -> t.getDate().getMonth())));
     }
 
-    public static Supplier<ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>> t12_ConcurrentMap_1(List<Transaction> transactions) {
+    public static Supplier<ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>>>
+    t12_ConcurrentMap_1(List<Transaction> transactions) {
         return () -> transactions.parallelStream().collect(groupingByConcurrent(Transaction::getCounterId,
                 groupingByConcurrent(t -> t.getDate().getMonth())));
     }
@@ -562,7 +598,8 @@ public final class BJSUtils {
         );
     }
 
-    public static Supplier<ConcurrentMap<String, Double>> t12_ConcurrentMap_2(ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>> map) {
+    public static Supplier<ConcurrentMap<String, Double>> t12_ConcurrentMap_2(ConcurrentMap<String,
+            ConcurrentMap<Month, List<Transaction>>> map) {
         return () -> map.entrySet().parallelStream().collect(toConcurrentMap(
                 ConcurrentMap.Entry::getKey,
                 e -> e.getValue().values().stream().map(l -> l.stream().map(Transaction::getValue)
