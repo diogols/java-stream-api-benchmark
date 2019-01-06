@@ -9,7 +9,7 @@ public class Transaction {
     private final double value;
     private final LocalDateTime date;
 
-    static public Transaction of(String id, String counterId, double value, LocalDateTime date) {
+    static Transaction of(String id, String counterId, double value, LocalDateTime date) {
         return new Transaction(id, counterId, value, date);
     }
 
@@ -20,19 +20,19 @@ public class Transaction {
         this.date = date;
     }
 
-    public String getId() {
+    String getId() {
         return id;
     }
 
-    public String getCounterId() {
+    String getCounterId() {
         return counterId;
     }
 
-    public double getValue() {
+    double getValue() {
         return value;
     }
 
-    public LocalDateTime getDate() {
+    LocalDateTime getDate() {
         return date;
     }
 

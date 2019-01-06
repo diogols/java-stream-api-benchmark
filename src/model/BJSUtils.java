@@ -1,7 +1,9 @@
 package model;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -23,6 +25,39 @@ import static java.util.stream.Collectors.*;
 public final class BJSUtils {
     private final static int RUNS = 10;
     private final static int MIN = 1, MAX = 9999;
+
+    public static <T> void writeCSV(final String filename, final List<String> headers, final List<List<T>> lines) {
+        Path path = Paths.get(filename);
+        String delimiter = "";
+
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            final StringBuilder sb = new StringBuilder();
+
+            for (String h : headers) {
+                sb.append(delimiter);
+                sb.append(h);
+                delimiter = ",";
+            }
+
+            sb.append("\n");
+
+            for (List<T> line : lines) {
+                delimiter = "";
+
+                for (T t : line) {
+                    sb.append(delimiter);
+                    sb.append(t.toString());
+                    delimiter = ",";
+                }
+
+                sb.append("\n");
+            }
+
+            writer.write(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static <R> List<R> load(final String filename, final Function<String, R> function) {
         List<R> list = new ArrayList<>();
@@ -109,6 +144,7 @@ public final class BJSUtils {
             for (int i = 0; i < size; i++) {
                 values[i] = transactions.get(i).getValue();
             }
+
             return values;
         };
     }
@@ -117,8 +153,8 @@ public final class BJSUtils {
     public static Supplier<double[]> t1_7_2(List<Transaction> transactions) {
         return () -> {
             final double[] values = new double[transactions.size()];
-
             int i = 0;
+
             for (Transaction t : transactions) {
                 values[i++] = t.getValue();
             }
@@ -170,8 +206,11 @@ public final class BJSUtils {
         return new Random().ints(size, min, max + 1).toArray();
     }
 
-    public static Supplier<IntStream> t3(IntStream intStream) {
-        return intStream::distinct;
+    public static Supplier<IntStream> t3_IntStream(int[] intStream) {
+        return () -> {
+            Supplier<IntStream> streamSupplier = () -> IntStream.of(intStream);
+            return streamSupplier.get().distinct();
+        };
     }
 
     public static Supplier<int[]> t3(int[] ints) {

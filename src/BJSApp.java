@@ -45,7 +45,7 @@ public class BJSApp {
         */
 
         //T3
-        //int[] random = BJSUtils.generateArrayInt(2000000);
+        //int[] random = BJSUtils.generateArrayInt(1000000);
 
         //SimpleEntry<Double, IntStream> intStream = BJSUtils.testBox(0, BJSUtils.t3(Arrays.stream(random)));
         //SimpleEntry<Double, int[]> intArray = BJSUtils.testBox(0, BJSUtils.t3(random));
