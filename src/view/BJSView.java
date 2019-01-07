@@ -15,10 +15,10 @@ public final class BJSView {
 
     public BJSView() {
         menus = Map.ofEntries(
-                entry(0, new Menu("\t*** MAIN MENU ***", Arrays.asList(
-                        new Option("Run all tests ------", "1"),
-                        new Option("Choose test to run -", "2"),
-                        new Option("Exit ---------------", "0"))))
+                entry(0, new Menu("Choose an option...", Arrays.asList(
+                        new Option("Run all tests -", "1"),
+                        new Option("Run one test --", "2"),
+                        new Option("Exit ----------", "0"))))
         );
     }
 
