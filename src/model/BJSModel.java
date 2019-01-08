@@ -93,6 +93,100 @@ public class BJSModel {
         tests.add(Arrays.asList("Size", "TreeSet", "List"));
 
         transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        ));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t6(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "Java 7 Map Month Day Hour", "Java 7 Map DayOfWeek Hour",
+                "Java 8 Map Month Day Hour", "Java 8 Map DayOfWeek Hour"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
+                BJSUtils.testBox(BJSUtils.t6_7_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t6_7_2(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t6_8_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t6_8_2(t)).getKey()
+        )));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t7(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        ));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t8(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        ));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t9(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        ));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t10(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        ));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t11(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        ));
+
+        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+    }
+
+    public void t12(List<List<Transaction>> transactions) {
+        final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
                 t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
                 BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
         ));

@@ -2,6 +2,7 @@ package controller;
 
 import model.BJSModel;
 import model.BJSUtils;
+import model.Crono;
 import model.Transaction;
 import view.BJSView;
 
@@ -55,13 +56,15 @@ public class BJSController {
     }
 
     private void runAllTests() {
-       transactions = Arrays.asList(BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction),
+        Crono.start();
+        transactions = Arrays.asList(BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa2M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa4M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction));
+        System.out.println("Files loaded in " + Crono.stop() + " seconds");
 
         //model.t1(transactions);
-        model.t2(transactions);
+        //model.t2(transactions);
         //model.t3();
         //model.t4(transactions);
         //model.t5(transactions);
