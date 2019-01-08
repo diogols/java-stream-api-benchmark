@@ -55,7 +55,7 @@ public class BJSController {
     }
 
     private void runAllTests() {
-        transactions = Arrays.asList(BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction),
+       transactions = Arrays.asList(BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa2M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa4M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction));
@@ -63,7 +63,7 @@ public class BJSController {
         //this.t1();
         //this.t3();
         //this.t4();
-        this.t5();
+        //this.t5();
     }
 
     private void t1() {
@@ -77,7 +77,7 @@ public class BJSController {
     private void t3() {
         final List<int[]> list = new ArrayList<>();
 
-        IntStream.range(1, 9).forEach(i -> list.add(model.generateArrayInt(i * 1000000)));
+        IntStream.range(1, 2).forEach(i -> list.add(model.generateArrayInt(i * 1000000)));
 
         model.t3(list);
     }

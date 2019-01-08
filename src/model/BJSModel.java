@@ -93,6 +93,7 @@ public class BJSModel {
         return Arrays.stream(array).boxed().collect(Collectors.toList());
     }
 
-    public Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate);
+    public Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate)
+            .thenComparing(Transaction::getId);
 }
 

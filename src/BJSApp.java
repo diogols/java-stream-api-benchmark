@@ -56,6 +56,12 @@ public class BJSApp {
         System.out.println(BJSUtils.t3(array).get().length);
         System.out.println(BJSUtils.t3(Arrays.stream(array).boxed().collect(Collectors.toList())).get().size());
 
+        System.out.println("Testing T4");
+        System.out.println(BJSUtils.t4_8_1_1(t1_7_1).get());
+        System.out.println(BJSUtils.t4_8_1_2(t1_7_1).get());
+        System.out.println(BJSUtils.t4_8_2_1(t1_7_1).get());
+        System.out.println(BJSUtils.t4_8_2_2(t1_7_1).get());
+
         System.out.println("Testing T5");
         System.out.println("Sizes");
         System.out.println(BJSUtils.t5_1(transactions, bjsModel.compareTransactionsByDate).get().size());
@@ -93,23 +99,22 @@ public class BJSApp {
         System.out.println(BJSUtils.t10_8(transactions).get().stream().mapToDouble(d -> d).sum());
 
         System.out.println("Testing T12");
-        System.out.println("Testing transaction 0 for counterID 2 and Month 1");
-        System.out.println(BJSUtils.t12_Map_1(transactions).get().get("2").get(Month.of(1)).get(0));
-        System.out.println(BJSUtils.t12_ConcurrentMap_1(transactions).get().get("2").get(Month.of(1)).get(0));
+        System.out.println("Testing number of transaction for counterId 2 and Month 1");
+        System.out.println(BJSUtils.t12_Map_1(transactions).get().get("2").get(Month.of(1)).size());
+        System.out.println(BJSUtils.t12_ConcurrentMap_1(transactions).get().get("2").get(Month.of(1)).size());
         System.out.println("Testing sum for counterID 2");
         System.out.println(BJSUtils.t12_Map_2(BJSUtils.t12_Map_1(transactions).get()).get().get("2"));
         System.out.println(BJSUtils.t12_ConcurrentMap_2(BJSUtils.t12_ConcurrentMap_1(transactions).get()).get().get("2"));
     }
 
     public static void main(String[] args) {
-        tests();
-
+        //tests();
         BJSView view = new BJSView();
         BJSModel model = new BJSModel();
         BJSController controller = new BJSController();
 
         controller.setView(view);
         controller.setModel(model);
-        //controller.startFlow();
+        controller.startFlow();
     }
 }

@@ -196,17 +196,15 @@ public final class BJSUtils {
             final int size = ints.length;
             final int[] unique = new int[size];
             int j;
-            int anInt;
             int k = 0;
 
-            for (int i = 0; i < size; i++) {
-                anInt = ints[i];
-                for (j = i + 1; j < size; j++) {
-                   if (ints[j] == anInt) {
-                       break;
-                   }
+            for (int anInt : ints) {
+                for (j = 0; j < k; j++) {
+                    if (unique[j] == anInt) {
+                        break;
+                    }
                 }
-                if (j == size) {
+                if (j == k) {
                     unique[k++] = anInt;
                 }
             }
