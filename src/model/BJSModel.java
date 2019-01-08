@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class BJSModel {
     private final static int MIN = 1, MAX = 9999;
@@ -35,12 +36,30 @@ public class BJSModel {
         BJSUtils.write("t1_" + timeStamp + ".csv", tests);
     }
 
-    public void t3(List<int[]> arrays) {
+    public void t2(final List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
+
+        tests.add(Arrays.asList("Size", "List Sequential", "List Parallel", "TreeSet Sequential", "TreeSet Parallel"));
+
+        transactions.forEach(t -> tests.add(Arrays.asList(
+                t.size(), BJSUtils.testBox(BJSUtils.t2_list_1(t, 0.3, 0.3, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(BJSUtils.t2_list_2(t, 0.3, 0.3, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(BJSUtils.t2_treeSet_1(t, 0.3, 0.3, this.compareTransactionsByDate)).getKey(),
+                BJSUtils.testBox(BJSUtils.t2_treeSet_2(t, 0.3, 0.3, this.compareTransactionsByDate)).getKey()
+                )
+        ));
+
+        BJSUtils.write("t2_" + timeStamp + ".csv", tests);
+    }
+
+    public void t3() {
+        final List<int[]> ints = new ArrayList<>();
+        final List<List<Object>> tests = new ArrayList<>();
+        IntStream.range(1, 9).forEach(i -> ints.add(this.generateArrayInt(i * 1000000)));
 
         tests.add(Arrays.asList("Size", "IntStream", "int[] array", "List<Integer>"));
 
-        arrays.forEach(t -> tests.add(Arrays.asList(
+        ints.forEach(t -> tests.add(Arrays.asList(
                 t.length, BJSUtils.testBox(BJSUtils.t3_IntStream(t)).getKey(),
                 BJSUtils.testBox(BJSUtils.t3(t)).getKey(),
                 BJSUtils.testBox(BJSUtils.t3(this.toList(t))).getKey()
@@ -93,7 +112,7 @@ public class BJSModel {
         return Arrays.stream(array).boxed().collect(Collectors.toList());
     }
 
-    public Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate)
+    private final Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate)
             .thenComparing(Transaction::getId);
 }
 

@@ -6,8 +6,7 @@ import view.BJSView;
 
 import java.time.DayOfWeek;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -18,9 +17,10 @@ public class BJSApp {
         final BJSModel bjsModel = new BJSModel();
         final List<Transaction> transactions = BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction);
         final int[] array = bjsModel.generateArrayInt(1000000);
+        final Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate)
+                .thenComparing(Transaction::getId);
 
         System.out.println("Testing T1");
-
         final double[] t1_7_1 = BJSUtils.t1_7_1(transactions).get();
         final double[] t1_7_2 = BJSUtils.t1_7_2(transactions).get();
         final DoubleStream t1_8_1_1 = BJSUtils.t1_8_1_1(transactions).get();
@@ -50,6 +50,18 @@ public class BJSApp {
         System.out.println(BJSUtils.t1_8_2_1(transactions).get().mapToDouble(d -> d).sum());
         System.out.println(BJSUtils.t1_8_2_2(transactions).get().mapToDouble(d -> d).sum());
 
+        System.out.println("Testing T2");
+        System.out.println("Sizes");
+        final AbstractMap.SimpleEntry<List<Transaction>, List<Transaction>> s1 = BJSUtils.t2_list_1(transactions, 0.3, 0.4, compareTransactionsByDate).get();
+        final AbstractMap.SimpleEntry<List<Transaction>, List<Transaction>> s2 = BJSUtils.t2_list_2(transactions, 0.25522, 0.4, compareTransactionsByDate).get();
+        final AbstractMap.SimpleEntry<Set<Transaction>, Set<Transaction>> s3 = BJSUtils.t2_treeSet_1(transactions, 0.3, 0.4, compareTransactionsByDate).get();
+        final AbstractMap.SimpleEntry<Set<Transaction>, Set<Transaction>> s4 = BJSUtils.t2_treeSet_2(transactions, 0.3, 0.4, compareTransactionsByDate).get();
+
+        System.out.println(s1.getKey().size() + " " + s1.getValue().size());
+        System.out.println(s2.getKey().size() + " " + s2.getValue().size());
+        System.out.println(s3.getKey().size() + " " + s3.getValue().size());
+        System.out.println(s4.getKey().size() + " " + s4.getValue().size());
+
         System.out.println("Testing T3");
         System.out.println("Sizes");
         System.out.println(BJSUtils.t3_IntStream(array).get().count());
@@ -64,8 +76,8 @@ public class BJSApp {
 
         System.out.println("Testing T5");
         System.out.println("Sizes");
-        System.out.println(BJSUtils.t5_1(transactions, bjsModel.compareTransactionsByDate).get().size());
-        System.out.println(BJSUtils.t5_2(transactions, bjsModel.compareTransactionsByDate).get().size());
+        System.out.println(BJSUtils.t5_1(transactions, compareTransactionsByDate).get().size());
+        System.out.println(BJSUtils.t5_2(transactions, compareTransactionsByDate).get().size());
 
         System.out.println("Testing T6");
         System.out.println("Testing First Transaction of Month 1 Day 1 and Hour 1");

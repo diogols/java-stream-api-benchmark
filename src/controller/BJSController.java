@@ -60,53 +60,17 @@ public class BJSController {
                 BJSUtils.load("transCaixa4M.txt", BJSUtils.parseTransaction),
                 BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction));
 
-        //this.t1();
-        //this.t3();
-        //this.t4();
-        //this.t5();
-    }
-
-    private void t1() {
-        model.t1(transactions);
-    }
-
-    private void t2() {
-
-    }
-
-    private void t3() {
-        final List<int[]> list = new ArrayList<>();
-
-        IntStream.range(1, 2).forEach(i -> list.add(model.generateArrayInt(i * 1000000)));
-
-        model.t3(list);
-    }
-
-    private void t4() {
-        model.t4(transactions);
-    }
-
-    private void t5() {
-        model.t5(transactions);
-    }
-
-    private void t6() {
-
-    }
-
-    private void t7() {
-
-    }
-
-    private void t8() {
-
-    }
-
-    private void t9() {
-
-    }
-
-    private void t10() {
-
+        //model.t1(transactions);
+        model.t2(transactions);
+        //model.t3();
+        //model.t4(transactions);
+        //model.t5(transactions);
+        /*model.t6(transactions);
+        model.t7(transactions);
+        model.t8(transactions);
+        model.t9(transactions);
+        model.t10(transactions);
+        model.t11(transactions);
+        model.t12(transactions);*/
     }
 }

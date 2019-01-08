@@ -175,9 +175,88 @@ public final class BJSUtils {
      *  T2: Considere o problema típico de a partir de um data set de dada dimensão se pretenderem criar dois outros
      *  data sets correspondentes aos 30% primeiros e aos 30% últimos do data set original segundo um dado critério.
      *  Defina sobre TransCaixa um critério de comparação que envolva datas ou tempos e use-o neste teste,
-     *  em que se pretende comparar a solução com streams sequenciais e paralelas às soluções usando List<> e TreeSet<>.
-     */
+            *  em que se pretende comparar a solução com streams sequenciais e paralelas às soluções usando List<> e TreeSet<>.
+            */
 
+    public static Supplier<SimpleEntry<List<Transaction>, List<Transaction>>> t2_list_1(final List<Transaction> transactions,
+                                                                                        final double start, final double end,
+                                                                                        final Comparator<Transaction> comparator) {
+        return () -> {
+            final int size = transactions.size();
+
+            if (start + end <= 1) {
+                final int i = (int)Math.ceil(size * start);
+                final int j = (int)Math.ceil(size * end);
+
+                return new SimpleEntry<>(
+                        IntStream.range(0, i).mapToObj(transactions::get).sorted(comparator).collect(toList()),
+                        IntStream.range(size - j, size).mapToObj(transactions::get).sorted(comparator).collect(toList())
+                );
+            }
+
+            return null;
+        };
+    }
+
+    public static Supplier<SimpleEntry<List<Transaction>, List<Transaction>>> t2_list_2(final List<Transaction> transactions,
+                                                                                        final double start, final double end,
+                                                                                        final Comparator<Transaction> comparator) {
+        return () -> {
+            final int size = transactions.size();
+
+            if (start + end <= 1) {
+                final int i = (int)Math.ceil(size * start);
+                final int j = (int)Math.ceil(size * end);
+
+                return new SimpleEntry<>(
+                        IntStream.range(0, i).parallel().mapToObj(transactions::get).sorted(comparator).collect(toList()),
+                        IntStream.range(size - j, size).parallel().mapToObj(transactions::get).sorted(comparator).collect(toList())
+                );
+            }
+
+            return null;
+        };
+    }
+
+    public static Supplier<SimpleEntry<Set<Transaction>, Set<Transaction>>> t2_treeSet_1(final List<Transaction> transactions,
+                                                                                        final double start, final double end,
+                                                                                        final Comparator<Transaction> comparator) {
+        return () -> {
+            final int size = transactions.size();
+
+            if (start + end <= 1) {
+                final int i = (int)Math.ceil(size * start);
+                final int j = (int)Math.ceil(size * end);
+
+                return new SimpleEntry<>(
+                        IntStream.range(0, i).mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator))),
+                        IntStream.range(size - j, size).mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator)))
+                );
+            }
+
+            return null;
+        };
+    }
+
+    public static Supplier<SimpleEntry<Set<Transaction>, Set<Transaction>>> t2_treeSet_2(final List<Transaction> transactions,
+                                                                                        final double start, final double end,
+                                                                                        final Comparator<Transaction> comparator) {
+        return () -> {
+            final int size = transactions.size();
+
+            if (start + end <= 1) {
+                final int i = (int)Math.ceil(size * start);
+                final int j = (int)Math.ceil(size * end);
+
+                return new SimpleEntry<>(
+                        IntStream.range(0, i).parallel().mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator))),
+                        IntStream.range(size - j, size).parallel().mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator)))
+                );
+            }
+
+            return null;
+        };
+    }
 
     /*
      * T3: Crie uma IntStream, um int[] e uma List<Integer> com de 1M a 8M de números aleatórios de valores
@@ -260,10 +339,7 @@ public final class BJSUtils {
      */
 
     public static Supplier<Set<Transaction>> t5_1(List<Transaction> transactions, Comparator<Transaction> comparator) {
-        return () -> {
-            Supplier<TreeSet<Transaction>> supplier = () -> new TreeSet<>(comparator);
-            return transactions.stream().collect(Collectors.toCollection(supplier));
-        };
+        return () -> transactions.stream().collect(toCollection(() -> new TreeSet<>(comparator)));
     }
 
     public static Supplier<List<Transaction>> t5_2(List<Transaction> transactions, Comparator<Transaction> comparator) {

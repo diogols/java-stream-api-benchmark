@@ -20,19 +20,19 @@ public class Transaction {
         this.date = date;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 
-    String getCounterId() {
+    public String getCounterId() {
         return counterId;
     }
 
-    double getValue() {
+    public double getValue() {
         return value;
     }
 
-    LocalDateTime getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
