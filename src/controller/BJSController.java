@@ -63,17 +63,42 @@ public class BJSController {
                 BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction));
         System.out.println("Files loaded in " + Crono.stop() + " seconds");
 
-        //model.t1(transactions);
-        //model.t2(transactions);
-        //model.t3();
-        //model.t4(transactions);
-        //model.t5(transactions);
-        /*model.t6(transactions);
+        System.out.println("Starting test 1");
+        model.t1(transactions);
+        System.out.println("Test 1 done");
+        System.out.println("Starting test 2");
+        model.t2(transactions);
+        System.out.println("Test 2 done");
+        System.out.println("Starting test 3");
+        model.t3();
+        System.out.println("Test 3 done");
+        System.out.println("Starting test 4");
+        model.t4(transactions);
+        System.out.println("Test 4 done");
+        System.out.println("Starting test 5");
+        model.t5(transactions);
+        System.out.println("Test 5 done");
+        System.out.println("Starting test 6");
+        model.t6(transactions);
+        System.out.println("Test 6 done");
+        System.out.println("Starting test 7");
         model.t7(transactions);
+        System.out.println("Test 7 done");
+        System.out.println("Starting test 8");
         model.t8(transactions);
+        System.out.println("Test 8 done");
+        System.out.println("Starting test 9");
         model.t9(transactions);
+        System.out.println("Test 9 done");
+        System.out.println("Starting test 10");
         model.t10(transactions);
+        System.out.println("Test 10 done");
+        System.out.println("Starting test 11");
         model.t11(transactions);
-        model.t12(transactions);*/
+        System.out.println("Test 11 done");
+        System.out.println("Starting test 12");
+        model.t12(transactions);
+
+        System.out.println("All done");
     }
 }

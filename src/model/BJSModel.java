@@ -1,8 +1,10 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -103,8 +105,8 @@ public class BJSModel {
     public void t6(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "Java 7 Map Month Day Hour", "Java 7 Map DayOfWeek Hour",
-                "Java 8 Map Month Day Hour", "Java 8 Map DayOfWeek Hour"));
+        tests.add(Arrays.asList("Size", "Java 7 Map<Month, Map<Day, Map<Hour, List>>>", "Java 7 Map<DayOfWeek, Map<Hour, List>>",
+                "Java 8 Map<Month, Map<Day, Map<Hour, List>>>", "Java 8 Map<DayOfWeek, Map<Hour, List>>"));
 
         transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
                 BJSUtils.testBox(BJSUtils.t6_7_1(t)).getKey(),
@@ -113,85 +115,97 @@ public class BJSModel {
                 BJSUtils.testBox(BJSUtils.t6_8_2(t)).getKey()
         )));
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+        BJSUtils.write("t6_" + timeStamp + ".csv", tests);
     }
 
     public void t7(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+        tests.add(Arrays.asList("Size", "Java 7 List", "Spliterator", "Java 8 Sequential", "Java 8 Parallel"));
 
-        transactions.forEach(t -> tests.add(Arrays.asList(
-                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
-                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
+                BJSUtils.testBox(BJSUtils.t7_7(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t7_8_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t7_8_2(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t7_8_3(t)).getKey())
         ));
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+        BJSUtils.write("t7_" + timeStamp + ".csv", tests);
     }
 
     public void t8(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+        tests.add(Arrays.asList("Size", "Java 7", "Java 8"));
 
-        transactions.forEach(t -> tests.add(Arrays.asList(
-                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
-                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
+                BJSUtils.testBox(BJSUtils.t8_7(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t8_8(t)).getKey())
         ));
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+        BJSUtils.write("t8_" + timeStamp + ".csv", tests);
     }
 
     public void t9(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+        tests.add(Arrays.asList("Size", "Java 7", "Java 8"));
 
-        transactions.forEach(t -> tests.add(Arrays.asList(
-                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
-                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
+                BJSUtils.testBox(BJSUtils.t9_7(t, 24)).getKey(),
+                BJSUtils.testBox(BJSUtils.t9_8(t, 24)).getKey())
         ));
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+        BJSUtils.write("t9_" + timeStamp + ".csv", tests);
     }
 
     public void t10(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+        tests.add(Arrays.asList("Size", "Java 7", "Java 8"));
 
-        transactions.forEach(t -> tests.add(Arrays.asList(
-                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
-                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
+                BJSUtils.testBox(BJSUtils.t10_7(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t10_8(t)).getKey())
         ));
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+        BJSUtils.write("t10_" + timeStamp + ".csv", tests);
     }
 
     public void t11(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+        tests.add(Arrays.asList("Size", "T1", "T6", "T8", "T10"));
 
-        transactions.forEach(t -> tests.add(Arrays.asList(
-                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
-                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
+        transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
+                BJSUtils.testBox(BJSUtils.t1_8_1_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t6_8_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t8_8(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t10_8(t)).getKey())
         ));
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+        BJSUtils.write("t11_" + timeStamp + ".csv", tests);
     }
 
     public void t12(List<List<Transaction>> transactions) {
         final List<List<Object>> tests = new ArrayList<>();
 
-        tests.add(Arrays.asList("Size", "TreeSet", "List"));
+        tests.add(Arrays.asList("Size", "Map<CounterId, Map<Month, List>>", "ConcurrentMap<CounterId, ConcurrentMap<Month, List>>",
+                "Map<CounterId, Double>", "ConcurrentMap<CounterId, Double"));
 
-        transactions.forEach(t -> tests.add(Arrays.asList(
-                t.size(), BJSUtils.testBox(0,BJSUtils.t5_1(t, this.compareTransactionsByDate)).getKey(),
-                BJSUtils.testBox(0,BJSUtils.t5_2(t, this.compareTransactionsByDate)).getKey())
-        ));
+        transactions.forEach(t -> {
+            final Map<String, Map<Month, List<Transaction>>> map = BJSUtils.t12_Map_1(t).get();
+            final ConcurrentMap<String, ConcurrentMap<Month, List<Transaction>>> concurrentMap = BJSUtils.t12_ConcurrentMap_1(t).get();
 
-        BJSUtils.write("t5_" + timeStamp + ".csv", tests);
+            tests.add(Arrays.asList(t.size(),
+                    BJSUtils.testBox(BJSUtils.t12_Map_1(t)).getKey(),
+                    BJSUtils.testBox(BJSUtils.t12_ConcurrentMap_1(t)).getKey(),
+                    BJSUtils.testBox(BJSUtils.t12_Map_2(map)).getKey(),
+                    BJSUtils.testBox(BJSUtils.t12_ConcurrentMap_2(concurrentMap)).getKey()
+            ));
+        });
+
+        BJSUtils.write("t12_" + timeStamp + ".csv", tests);
     }
 
     public int[] generateArrayInt(final int size) {
