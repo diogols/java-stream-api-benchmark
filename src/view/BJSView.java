@@ -4,26 +4,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.Map.entry;
 
 public final class BJSView {
 
     private final Map<Integer, Menu> menus;
 
     public BJSView() {
-        menus = Map.ofEntries(
-                entry(0, new Menu("Choose an option...", Arrays.asList(
-                        new Option("Run all tests -", "1"),
+        menus = new HashMap<>();
+
+        menus.put(0, new Menu("Choose an option...",
+                Arrays.asList(new Option("Run all tests -", "1"),
                         new Option("Run one test --", "2"),
-                        new Option("Exit ----------", "0"))))
+                        new Option("Exit ----------", "0")))
         );
     }
 
     public void displaySpacing() {
-        System.out.println("\n".repeat(10));
+        System.out.println("\n");
     }
 
     public void displayMessage(final String message) {

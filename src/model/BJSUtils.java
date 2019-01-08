@@ -125,7 +125,7 @@ public final class BJSUtils {
      */
 
     // double[] for()
-    static Supplier<double[]> t1_7_1(final List<Transaction> transactions) {
+    public static Supplier<double[]> t1_7_1(final List<Transaction> transactions) {
         return () -> {
             final int size = transactions.size();
             final double[] values = new double[size];
@@ -139,7 +139,7 @@ public final class BJSUtils {
     }
 
     // double[] forEach()
-    static Supplier<double[]> t1_7_2(List<Transaction> transactions) {
+    public static Supplier<double[]> t1_7_2(List<Transaction> transactions) {
         return () -> {
             final double[] values = new double[transactions.size()];
             int i = 0;
@@ -152,22 +152,22 @@ public final class BJSUtils {
     }
 
     // DoubleStream stream()
-    static Supplier<DoubleStream> t1_8_1_1(List<Transaction> transactions) {
+    public static Supplier<DoubleStream> t1_8_1_1(List<Transaction> transactions) {
         return () -> transactions.stream().mapToDouble(Transaction::getValue);
     }
 
     // DoubleStream parallelStream()
-    static Supplier<DoubleStream> t1_8_1_2(List<Transaction> transactions) {
+    public static Supplier<DoubleStream> t1_8_1_2(List<Transaction> transactions) {
         return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
     }
 
     // Stream<Double> stream()
-    static Supplier<Stream<Double>> t1_8_2_1(List<Transaction> transactions) {
+    public static Supplier<Stream<Double>> t1_8_2_1(List<Transaction> transactions) {
         return () -> transactions.stream().map(Transaction::getValue);
     }
 
     // Stream<Double> parallelStream()
-    static Supplier<Stream<Double>> t1_8_2_2(List<Transaction> transactions) {
+    public static Supplier<Stream<Double>> t1_8_2_2(List<Transaction> transactions) {
         return () -> transactions.parallelStream().map(Transaction::getValue);
     }
 
@@ -184,22 +184,20 @@ public final class BJSUtils {
      * entre 1 e 9999. Determine o esforço de eliminar duplicados em cada situação.
      */
 
-    static Supplier<IntStream> t3_IntStream(int[] intStream) {
+    public static Supplier<IntStream> t3_IntStream(int[] intStream) {
         return () -> {
             Supplier<IntStream> streamSupplier = () -> IntStream.of(intStream);
             return streamSupplier.get().distinct();
         };
     }
 
-    static Supplier<int[]> t3(int[] ints) {
+    public static Supplier<int[]> t3(int[] ints) {
         return () -> {
             final int size = ints.length;
             final int[] unique = new int[size];
-
             int j;
             int anInt;
             int k = 0;
-
 
             for (int i = 0; i < size; i++) {
                 anInt = ints[i];
@@ -217,25 +215,16 @@ public final class BJSUtils {
         };
     }
 
-    static Supplier<List<Integer>> t3(List<Integer> integers) {
+    public static Supplier<List<Integer>> t3(List<Integer> integers) {
        return () -> {
-           final int size = integers.size();
            final List<Integer> unique = new ArrayList<>();
 
-           int j;
-           int anInt;
-
-           for (int i = 0; i < size; i++) {
-               anInt = integers.get(i);
-               for (j = i + 1; j < size; j++) {
-                   if (integers.get(j) == anInt) {
-                       break;
-                   }
-               }
-               if (j == size) {
-                   unique.add(anInt);
+           for (Integer integer : integers) {
+               if (!unique.contains(integer)) {
+                   unique.add(integer);
                }
            }
+
            return unique;
        };
     }
@@ -250,19 +239,19 @@ public final class BJSUtils {
 
     private static BiFunction<Double, Double, Double> multiplyDouble = (a, b) -> a * b;
 
-    static Supplier<Double> t4_8_1_1(double[] values) {
+    public static Supplier<Double> t4_8_1_1(double[] values) {
         return () -> Arrays.stream(values).reduce(0, (a, b) -> multiplyDouble.apply(a, b));
     }
 
-    static Supplier<Double> t4_8_1_2(double[] values) {
+    public static Supplier<Double> t4_8_1_2(double[] values) {
         return () -> Arrays.stream(values).parallel().reduce(0, (a, b) -> multiplyDouble.apply(a, b));
     }
 
-    static Supplier<Double> t4_8_2_1(double[] values) {
+    public static Supplier<Double> t4_8_2_1(double[] values) {
         return () -> Arrays.stream(values).reduce(0, (a, b) -> a * b);
     }
 
-    static Supplier<Double> t4_8_2_2(double[] values) {
+    public static Supplier<Double> t4_8_2_2(double[] values) {
         return () -> Arrays.stream(values).parallel().reduce(0, (a, b) -> a * b);
     }
 
@@ -403,8 +392,6 @@ public final class BJSUtils {
 
             ForkJoinPool pool = new ForkJoinPool(4);
 
-
-
             Function<Spliterator<Transaction>, Double> sumFunction = spliterator -> {
                 final DoubleWrapper d = new DoubleWrapper();
                 while(spliterator.tryAdvance(t -> d.add(t.getValue())));
@@ -475,19 +462,19 @@ public final class BJSUtils {
     /*
      * Crie uma List<List<TransCaixa>> em que cada lista elemento da lista contém todas as transacções realizadas nos
      * dias de 1 a 7 de uma dada semana do ano (1 a 52/53). Codifique em JAVA 7 e em Java 8 com streams, o problema de,
-     * dada tal lista, se apurar o total facturado nessa semana.
+     * dada tal lista, se apurar o total faturado nessa semana.
      */
-    static Supplier<Double> t9_7(List<Transaction> transactions, int weekOfYear) {
+    public static Supplier<Double> t9_7(List<Transaction> transactions, int weekOfYear) {
         return t9_7(toWeekDayLists(transactions).get(weekOfYear));
     }
 
-    static Supplier<Double> t9_8(List<Transaction> transactions, int weekOfYear) {
+    public static Supplier<Double> t9_8(List<Transaction> transactions, int weekOfYear) {
         return t9_8(toWeekDayLists(transactions).get(weekOfYear));
     }
 
 
     // Argument is the week of transactions of some week in a year
-    static Supplier<Double> t9_7(List<List<Transaction>> transactions) {
+    private static Supplier<Double> t9_7(List<List<Transaction>> transactions) {
         return () -> {
             double sum = 0;
             for (List<Transaction> l : transactions) {
@@ -499,13 +486,13 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<Double> t9_8(List<List<Transaction>> transactions) {
+    private static Supplier<Double> t9_8(List<List<Transaction>> transactions) {
         return () -> transactions.stream().map(l -> l.stream().map(Transaction::getValue)
                 .reduce(0.0, Double::sum)).reduce(0.0, Double::sum);
     }
 
     // Create another method with Java 8 maybe
-    public static List<List<List<Transaction>>> toWeekDayLists(List<Transaction> transactions) {
+    private static List<List<List<Transaction>>> toWeekDayLists(List<Transaction> transactions) {
         int week;
         int day;
         List<List<Transaction>> days;
