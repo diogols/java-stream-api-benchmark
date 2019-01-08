@@ -333,8 +333,8 @@ public final class BJSUtils {
     }
 
     /*
-     * Usando os dados disponíveis crie um teste que permita comparar se dada a List<TransCaixa> e um
-     * Comparator<TransCaixa>, que deverá ser definido, é mais eficiente, usando streams, fazer o collect para um
+     * Usando os dados disponíveis crie um teste que permita comparar se dada a List<TransCaixa> e um
+     * Comparator<TransCaixa>, que deverá ser definido, é mais eficiente, usando streams, fazer o collect para um
      * TreeSet<TransCaixa> ou usar a operação sorted() e fazer o collect para uma nova List<TransCaixa>.
      */
 
@@ -347,7 +347,7 @@ public final class BJSUtils {
     }
 
     /*
-     * Considere o exemplo prático das aulas de streams em que se criou uma tabela com as transacções catalogadas por
+     * Considere o exemplo prático das aulas de streams em que se criou uma tabela com as transacções catalogadas por
      * Mês, Dia, Hora efectivos. Codifique em JAVA 7 o problema que foi resolvido com streams e compare tempos de
      * execução. Faça o mesmo para um Map<Dia_da_Semana, Hora>.
      */
@@ -443,7 +443,7 @@ public final class BJSUtils {
 
 
     /*
-     * Usando List<TransCaixa> e Spliterator<TransCaixa> crie 4 partições cada uma com 1⁄4 do data set. Compare os
+     * Usando List<TransCaixa> e Spliterator<TransCaixa> crie 4 partições cada uma com 1/4 do data set. Compare os
      * tempos de processamento de calcular a soma do valor das transacções com as quatro partições ou com o data set
      * inteiro, quer usando List<> e forEach() quer usando streams sequenciais e paralelas.
      */
@@ -500,8 +500,8 @@ public final class BJSUtils {
     }
 
     /*
-     * Codifique em JAVA 7 e em Java 8 com streams, o problema de, dada a List<TransCaixa>, determinar o código da
-     * transacção de maior valor realizada num a dada data válida entre as 16 e as 22 horas.
+     * Codifique em JAVA 7 e em Java 8 com streams, o problema de, dada a List<TransCaixa>, determinar o código da
+     * transacção de maior valor realizada num a dada data válida entre as 16 e as 22 horas.
      */
     public static Supplier<String> t8_7(List<Transaction> transactions) {
         return () -> {
@@ -534,7 +534,7 @@ public final class BJSUtils {
     }
 
     /*
-     * Crie uma List<List<TransCaixa>> em que cada lista elemento da lista contém todas as transacções realizadas nos
+     * Crie uma List<List<TransCaixa>> em que cada lista elemento da lista contém todas as transacções realizadas nos
      * dias de 1 a 7 de uma dada semana do ano (1 a 52/53). Codifique em JAVA 7 e em Java 8 com streams, o problema de,
      * dada tal lista, se apurar o total faturado nessa semana.
      */
