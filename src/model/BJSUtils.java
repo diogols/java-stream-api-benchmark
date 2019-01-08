@@ -47,7 +47,6 @@ public final class BJSUtils {
 
             writer.write(sb.toString());
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -440,7 +439,6 @@ public final class BJSUtils {
                 try {
                     sum += future.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
                 }
             }
             return sum;
