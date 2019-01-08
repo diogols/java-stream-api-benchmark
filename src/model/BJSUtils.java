@@ -13,8 +13,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -80,42 +80,6 @@ public final class BJSUtils {
         return new SimpleEntry<>(time, r);
     }
 
-    public static Function<String, Transaction> parseTransaction = (line) -> {
-        final String[] fields = line.split("/");
-        final String id = fields[0].trim();
-        final String counterId = fields[1].trim();
-        final double value;
-
-        try {
-            value = Double.parseDouble(fields[2]);
-        } catch(InputMismatchException | NumberFormatException e) {
-            return null;
-        }
-
-        final String[] dMYHMS = fields[3].split("T");
-
-        final String[] dMY = dMYHMS[0].split(":");
-        final String[] hM = dMYHMS[1].split(":");
-
-        final int year;
-        final int month;
-        final int day;
-        final int hours;
-        final int minutes;
-
-        try {
-            day = Integer.parseInt(dMY[0]);
-            month = Integer.parseInt(dMY[1]);
-            year = Integer.parseInt(dMY[2]);
-            hours = Integer.parseInt(hM[0]);
-            minutes = Integer.parseInt(hM[1]);
-        } catch(InputMismatchException | NumberFormatException e) {
-            return null;
-        }
-
-        return Transaction.of(id, counterId, value, LocalDateTime.of(year, month, day, hours, minutes, 0));
-    };
-
 
     /*
      * T1: Criar um double[], uma DoubleStream e uma Stream<Double> contendo desde 1M até 8M dos valores das transacções
@@ -152,23 +116,23 @@ public final class BJSUtils {
     }
 
     // DoubleStream stream()
-    public static Supplier<DoubleStream> t1_8_1_1(List<Transaction> transactions) {
-        return () -> transactions.stream().mapToDouble(Transaction::getValue);
+    public static <T> Supplier<DoubleStream> t1_8_1_1(List<T> list, Function<T, Double> f) {
+        return () -> list.stream().mapToDouble(f::apply);
     }
 
     // DoubleStream parallelStream()
-    public static Supplier<DoubleStream> t1_8_1_2(List<Transaction> transactions) {
-        return () -> transactions.parallelStream().mapToDouble(Transaction::getValue);
+    public static <T> Supplier<DoubleStream> t1_8_1_2(List<T> list, Function<T, Double> f) {
+        return () -> list.parallelStream().mapToDouble(f::apply);
     }
 
     // Stream<Double> stream()
-    public static Supplier<Stream<Double>> t1_8_2_1(List<Transaction> transactions) {
-        return () -> transactions.stream().map(Transaction::getValue);
+    public static <T> Supplier<Stream<Double>> t1_8_2_1(List<T> list, Function<T, Double> f) {
+        return () -> list.stream().map(f);
     }
 
     // Stream<Double> parallelStream()
-    public static Supplier<Stream<Double>> t1_8_2_2(List<Transaction> transactions) {
-        return () -> transactions.parallelStream().map(Transaction::getValue);
+    public static <T> Supplier<Stream<Double>> t1_8_2_2(List<T> list, Function<T, Double> f) {
+        return () -> list.parallelStream().map(f);
     }
 
     /*
@@ -178,19 +142,17 @@ public final class BJSUtils {
             *  em que se pretende comparar a solução com streams sequenciais e paralelas às soluções usando List<> e TreeSet<>.
             */
 
-    public static Supplier<SimpleEntry<List<Transaction>, List<Transaction>>> t2_list_1(final List<Transaction> transactions,
-                                                                                        final double start, final double end,
-                                                                                        final Comparator<Transaction> comparator) {
+    public static <T> Supplier<SimpleEntry<List<T>, List<T>>> t2_list_1(final List<T> list, final double start, final double end, final Comparator<T> comparator) {
         return () -> {
-            final int size = transactions.size();
+            final int size = list.size();
 
             if (start + end <= 1) {
                 final int i = (int)Math.ceil(size * start);
                 final int j = (int)Math.ceil(size * end);
 
                 return new SimpleEntry<>(
-                        IntStream.range(0, i).mapToObj(transactions::get).sorted(comparator).collect(toList()),
-                        IntStream.range(size - j, size).mapToObj(transactions::get).sorted(comparator).collect(toList())
+                        IntStream.range(0, i).mapToObj(list::get).sorted(comparator).collect(toList()),
+                        IntStream.range(size - j, size).mapToObj(list::get).sorted(comparator).collect(toList())
                 );
             }
 
@@ -198,19 +160,17 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<SimpleEntry<List<Transaction>, List<Transaction>>> t2_list_2(final List<Transaction> transactions,
-                                                                                        final double start, final double end,
-                                                                                        final Comparator<Transaction> comparator) {
+    public static <T> Supplier<SimpleEntry<List<T>, List<T>>> t2_list_2(final List<T> list, final double start, final double end, final Comparator<T> comparator) {
         return () -> {
-            final int size = transactions.size();
+            final int size = list.size();
 
             if (start + end <= 1) {
                 final int i = (int)Math.ceil(size * start);
                 final int j = (int)Math.ceil(size * end);
 
                 return new SimpleEntry<>(
-                        IntStream.range(0, i).parallel().mapToObj(transactions::get).sorted(comparator).collect(toList()),
-                        IntStream.range(size - j, size).parallel().mapToObj(transactions::get).sorted(comparator).collect(toList())
+                        IntStream.range(0, i).parallel().mapToObj(list::get).sorted(comparator).collect(toList()),
+                        IntStream.range(size - j, size).parallel().mapToObj(list::get).sorted(comparator).collect(toList())
                 );
             }
 
@@ -218,19 +178,17 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<SimpleEntry<Set<Transaction>, Set<Transaction>>> t2_treeSet_1(final List<Transaction> transactions,
-                                                                                        final double start, final double end,
-                                                                                        final Comparator<Transaction> comparator) {
+    public static <T> Supplier<SimpleEntry<Set<T>, Set<T>>> t2_treeSet_1(final List<T> list, final double start, final double end, final Comparator<T> comparator) {
         return () -> {
-            final int size = transactions.size();
+            final int size = list.size();
 
             if (start + end <= 1) {
                 final int i = (int)Math.ceil(size * start);
                 final int j = (int)Math.ceil(size * end);
 
                 return new SimpleEntry<>(
-                        IntStream.range(0, i).mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator))),
-                        IntStream.range(size - j, size).mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator)))
+                        IntStream.range(0, i).mapToObj(list::get).collect(toCollection(() -> new TreeSet<>(comparator))),
+                        IntStream.range(size - j, size).mapToObj(list::get).collect(toCollection(() -> new TreeSet<>(comparator)))
                 );
             }
 
@@ -238,19 +196,17 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<SimpleEntry<Set<Transaction>, Set<Transaction>>> t2_treeSet_2(final List<Transaction> transactions,
-                                                                                        final double start, final double end,
-                                                                                        final Comparator<Transaction> comparator) {
+    public static <T> Supplier<SimpleEntry<Set<T>, Set<T>>> t2_treeSet_2(final List<T> list, final double start, final double end, final Comparator<T> comparator) {
         return () -> {
-            final int size = transactions.size();
+            final int size = list.size();
 
             if (start + end <= 1) {
                 final int i = (int)Math.ceil(size * start);
                 final int j = (int)Math.ceil(size * end);
 
                 return new SimpleEntry<>(
-                        IntStream.range(0, i).parallel().mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator))),
-                        IntStream.range(size - j, size).parallel().mapToObj(transactions::get).collect(toCollection(() -> new TreeSet<>(comparator)))
+                        IntStream.range(0, i).parallel().mapToObj(list::get).collect(toCollection(() -> new TreeSet<>(comparator))),
+                        IntStream.range(size - j, size).parallel().mapToObj(list::get).collect(toCollection(() -> new TreeSet<>(comparator)))
                 );
             }
 
@@ -338,12 +294,12 @@ public final class BJSUtils {
      * TreeSet<TransCaixa> ou usar a operação sorted() e fazer o collect para uma nova List<TransCaixa>.
      */
 
-    public static Supplier<Set<Transaction>> t5_1(List<Transaction> transactions, Comparator<Transaction> comparator) {
-        return () -> transactions.stream().collect(toCollection(() -> new TreeSet<>(comparator)));
+    public static <T> Supplier<Set<T>> t5_1(List<T> list, Comparator<T> comparator) {
+        return () -> list.stream().collect(toCollection(() -> new TreeSet<>(comparator)));
     }
 
-    public static Supplier<List<Transaction>> t5_2(List<Transaction> transactions, Comparator<Transaction> comparator) {
-        return () -> transactions.stream().sorted(comparator).collect(toList());
+    public static <T> Supplier<List<T>> t5_2(List<T> list, Comparator<T> comparator) {
+        return () -> list.stream().sorted(comparator).collect(toList());
     }
 
     /*
@@ -457,18 +413,18 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<Double> t7_8_1(List<Transaction> transactions) {
+    public static <T> Supplier<Double> t7_8_1(List<T> list, Function<T, Double> f) {
         return () -> {
-            Spliterator<Transaction> spliterator0 = transactions.spliterator();
-            Spliterator<Transaction> spliterator1 = spliterator0.trySplit();
-            Spliterator<Transaction> spliterator2 = spliterator0.trySplit();
-            Spliterator<Transaction> spliterator3 = spliterator1.trySplit();
+            Spliterator<T> spliterator0 = list.spliterator();
+            Spliterator<T> spliterator1 = spliterator0.trySplit();
+            Spliterator<T> spliterator2 = spliterator0.trySplit();
+            Spliterator<T> spliterator3 = spliterator1.trySplit();
 
             ForkJoinPool pool = new ForkJoinPool(4);
 
-            Function<Spliterator<Transaction>, Double> sumFunction = spliterator -> {
+            Function<Spliterator<T>, Double> sumFunction = spliterator -> {
                 final DoubleWrapper d = new DoubleWrapper();
-                while(spliterator.tryAdvance(t -> d.add(t.getValue())));
+                while(spliterator.tryAdvance(t -> d.add(f.apply(t))));
                 return d.get();
             };
 
@@ -491,12 +447,12 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<Double> t7_8_2(List<Transaction> transactions) {
-        return () -> transactions.stream().mapToDouble(Transaction::getValue).sum();
+    public static <T> Supplier<Double> t7_8_2(List<T> list, Function<T, Double> f) {
+        return () -> list.stream().mapToDouble(f::apply).sum();
     }
 
-    public static Supplier<Double> t7_8_3(List<Transaction> transactions) {
-        return () -> transactions.parallelStream().mapToDouble(Transaction::getValue).sum();
+    public static <T> Supplier<Double> t7_8_3(List<T> list, Function<T, Double> f) {
+        return () -> list.parallelStream().mapToDouble(f::apply).sum();
     }
 
     /*
@@ -519,17 +475,17 @@ public final class BJSUtils {
         };
     }
 
-    public static Supplier<String> t8_8(List<Transaction> transactions) {
+    public static <T> Supplier<String> t8_8(List<T> list, Predicate<T> predicate, Function<T, String> key, Function<T, Double> value) {
         return () -> {
-            final StringDoubleWrapper transaction = new StringDoubleWrapper();
+            final StringDoubleWrapper wrapper = new StringDoubleWrapper();
 
-            transactions.forEach(t -> {
-                if (t.getDate().getHour() >= 16 && t.getDate().getHour() < 22 && t.getValue() > transaction.getValue()) {
-                    transaction.set(t.getId(), t.getValue());
+            list.forEach(t -> {
+                if (predicate.test(t) && value.apply(t) > wrapper.getValue()) {
+                    wrapper.set(key.apply(t), value.apply(t));
                 }
             });
 
-            return transaction.getId();
+            return wrapper.getId();
         };
     }
 
@@ -565,7 +521,6 @@ public final class BJSUtils {
                 .reduce(0.0, Double::sum)).reduce(0.0, Double::sum);
     }
 
-    // Create another method with Java 8 maybe
     private static List<List<List<Transaction>>> toWeekDayLists(List<Transaction> transactions) {
         int week;
         int day;
@@ -625,17 +580,8 @@ public final class BJSUtils {
     }
 
     // should return toList() directly but i do not know how
-    public static Supplier<List<Double>> t10_8(List<Transaction> transactions) {
-        return () -> new ArrayList<>(transactions.stream().collect(groupingBy(t -> t.getDate().getMonth().getValue(),
-                TreeMap::new, summingDouble(t -> {
-            if (t.getValue() > 29) {
-                return t.getValue() * 0.23;
-            } else if (t.getValue() < 20) {
-                return t.getValue() * 0.12;
-            } else {
-                return t.getValue() * 0.20;
-            }
-        }))).values());
+    public static <T> Supplier<List<Double>> t10_8(List<T> list, Function<T, Integer> f, Function<T, Double> g) {
+        return () -> new ArrayList<>(list.stream().collect(groupingBy(f, TreeMap::new, summingDouble(g::apply))).values());
     }
 
 

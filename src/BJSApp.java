@@ -14,7 +14,7 @@ public class BJSApp {
 
     private static void tests() {
         final BJSModel bjsModel = new BJSModel();
-        final List<Transaction> transactions = BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction);
+        final List<Transaction> transactions = BJSUtils.load("transCaixa1M.txt", bjsModel.parseTransaction);
         final int[] array = bjsModel.generateArrayInt(1000000);
         final Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate)
                 .thenComparing(Transaction::getId);
@@ -22,10 +22,10 @@ public class BJSApp {
         System.out.println("Testing T1");
         final double[] t1_7_1 = BJSUtils.t1_7_1(transactions).get();
         final double[] t1_7_2 = BJSUtils.t1_7_2(transactions).get();
-        final DoubleStream t1_8_1_1 = BJSUtils.t1_8_1_1(transactions).get();
-        final DoubleStream t1_8_1_2 = BJSUtils.t1_8_1_2(transactions).get();
-        final Stream<Double> t1_8_2_1 = BJSUtils.t1_8_2_1(transactions).get();
-        final Stream<Double> t1_8_2_2 = BJSUtils.t1_8_2_2(transactions).get();
+        final DoubleStream t1_8_1_1 = BJSUtils.t1_8_1_1(transactions, Transaction::getValue).get();
+        final DoubleStream t1_8_1_2 = BJSUtils.t1_8_1_2(transactions, Transaction::getValue).get();
+        final Stream<Double> t1_8_2_1 = BJSUtils.t1_8_2_1(transactions, Transaction::getValue).get();
+        final Stream<Double> t1_8_2_2 = BJSUtils.t1_8_2_2(transactions, Transaction::getValue).get();
 
         System.out.println("Sizes");
         System.out.println(t1_7_1.length);
@@ -44,10 +44,10 @@ public class BJSApp {
 
         System.out.println(sum1);
         System.out.println(sum2);
-        System.out.println(BJSUtils.t1_8_1_1(transactions).get().sum());
-        System.out.println(BJSUtils.t1_8_1_2(transactions).get().sum());
-        System.out.println(BJSUtils.t1_8_2_1(transactions).get().mapToDouble(d -> d).sum());
-        System.out.println(BJSUtils.t1_8_2_2(transactions).get().mapToDouble(d -> d).sum());
+        System.out.println(BJSUtils.t1_8_1_1(transactions, Transaction::getValue).get().sum());
+        System.out.println(BJSUtils.t1_8_1_2(transactions, Transaction::getValue).get().sum());
+        System.out.println(BJSUtils.t1_8_2_1(transactions, Transaction::getValue).get().mapToDouble(d -> d).sum());
+        System.out.println(BJSUtils.t1_8_2_2(transactions, Transaction::getValue).get().mapToDouble(d -> d).sum());
 
         System.out.println("Testing T2");
         System.out.println("Sizes");
@@ -88,13 +88,13 @@ public class BJSApp {
 
         System.out.println("Testing T7");
         System.out.println(BJSUtils.t7_7(transactions).get());
-        System.out.println(BJSUtils.t7_8_1(transactions).get());
-        System.out.println(BJSUtils.t7_8_2(transactions).get());
-        System.out.println(BJSUtils.t7_8_3(transactions).get());
+        System.out.println(BJSUtils.t7_8_1(transactions, Transaction::getValue).get());
+        System.out.println(BJSUtils.t7_8_2(transactions, Transaction::getValue).get());
+        System.out.println(BJSUtils.t7_8_3(transactions, Transaction::getValue).get());
 
         System.out.println("Testing T8");
         System.out.println(BJSUtils.t8_7(transactions).get());
-        System.out.println(BJSUtils.t8_8(transactions).get());
+        System.out.println(BJSUtils.t8_8(transactions, bjsModel.isInRange(16, 22), Transaction::getId, Transaction::getValue).get());
 
         System.out.println("Testing T9");
         System.out.println("Testing for week 9");
@@ -104,10 +104,10 @@ public class BJSApp {
         System.out.println("Testing T10");
         System.out.println("Sizes");
         System.out.println(BJSUtils.t10_7(transactions).get().size());
-        System.out.println(BJSUtils.t10_8(transactions).get().size());
+        System.out.println(BJSUtils.t10_8(transactions, bjsModel.getMonth, bjsModel.vat).get().size());
         System.out.println("Sum");
         System.out.println(BJSUtils.t10_7(transactions).get().stream().mapToDouble(d -> d).sum());
-        System.out.println(BJSUtils.t10_8(transactions).get().stream().mapToDouble(d -> d).sum());
+        System.out.println(BJSUtils.t10_8(transactions, bjsModel.getMonth, bjsModel.vat).get().stream().mapToDouble(d -> d).sum());
 
         System.out.println("Testing T12");
         System.out.println("Testing number of transaction for counterId 2 and Month 1");
@@ -116,19 +116,22 @@ public class BJSApp {
         System.out.println("Testing sum for counterID 2");
         System.out.println(BJSUtils.t12_Map_2(BJSUtils.t12_Map_1(transactions).get()).get().get("2"));
         System.out.println(BJSUtils.t12_ConcurrentMap_2(BJSUtils.t12_ConcurrentMap_1(transactions).get()).get().get("2"));
+
+        System.exit(0);
     }
 
     public static void main(String[] args) {
         //tests();
+        final BJSModel model = new BJSModel();
         Crono.start();
         List<List<Transaction>> transactions = Arrays.asList(
-                BJSUtils.load("transCaixa1M.txt", BJSUtils.parseTransaction),
-                BJSUtils.load("transCaixa2M.txt", BJSUtils.parseTransaction),
-                BJSUtils.load("transCaixa4M.txt", BJSUtils.parseTransaction),
-                BJSUtils.load("transCaixa6M.txt", BJSUtils.parseTransaction));
+                BJSUtils.load("transCaixa1M.txt", model.parseTransaction),
+                BJSUtils.load("transCaixa2M.txt", model.parseTransaction),
+                BJSUtils.load("transCaixa4M.txt", model.parseTransaction),
+                BJSUtils.load("transCaixa6M.txt", model.parseTransaction));
         System.out.println("Files loaded in " + Crono.stop() + " seconds");
 
-        final BJSModel model = new BJSModel();
+        model.createTimeStamp();
 
         System.out.println("Starting test 1");
         model.t1(transactions);

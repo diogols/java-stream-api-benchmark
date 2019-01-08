@@ -5,6 +5,8 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -14,6 +16,10 @@ public class BJSModel {
     private String timeStamp;
 
     public BJSModel() {
+        this.createTimeStamp();
+    }
+
+    public void createTimeStamp() {
         timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyyHHmmss"));
     }
 
@@ -25,13 +31,13 @@ public class BJSModel {
                 "Java 8 Stream<Double> parallel"));
 
         transactions.forEach(t -> tests.add(Arrays.asList(
-                    t.size(), BJSUtils.testBox(BJSUtils.t1_7_1(t)).getKey(),
-                    BJSUtils.testBox(BJSUtils.t1_7_2(t)).getKey(),
-                    BJSUtils.testBox(BJSUtils.t1_8_1_1(t)).getKey(),
-                    BJSUtils.testBox(BJSUtils.t1_8_1_2(t)).getKey(),
-                    BJSUtils.testBox(BJSUtils.t1_8_2_1(t)).getKey(),
-                    BJSUtils.testBox(BJSUtils.t1_8_2_2(t)).getKey())
-            )
+                t.size(), BJSUtils.testBox(BJSUtils.t1_7_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t1_7_2(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t1_8_1_1(t, Transaction::getValue)).getKey(),
+                BJSUtils.testBox(BJSUtils.t1_8_1_2(t, Transaction::getValue)).getKey(),
+                BJSUtils.testBox(BJSUtils.t1_8_2_1(t, Transaction::getValue)).getKey(),
+                BJSUtils.testBox(BJSUtils.t1_8_2_2(t, Transaction::getValue)).getKey())
+                )
         );
 
 
@@ -125,9 +131,9 @@ public class BJSModel {
 
         transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
                 BJSUtils.testBox(BJSUtils.t7_7(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t7_8_1(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t7_8_2(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t7_8_3(t)).getKey())
+                BJSUtils.testBox(BJSUtils.t7_8_1(t, Transaction::getValue)).getKey(),
+                BJSUtils.testBox(BJSUtils.t7_8_2(t, Transaction::getValue)).getKey(),
+                BJSUtils.testBox(BJSUtils.t7_8_3(t, Transaction::getValue)).getKey())
         ));
 
         BJSUtils.write("t7_" + timeStamp + ".csv", tests);
@@ -140,7 +146,7 @@ public class BJSModel {
 
         transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
                 BJSUtils.testBox(BJSUtils.t8_7(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t8_8(t)).getKey())
+                BJSUtils.testBox(BJSUtils.t8_8(t, isInRange(16, 22), Transaction::getId, Transaction::getValue)).getKey())
         ));
 
         BJSUtils.write("t8_" + timeStamp + ".csv", tests);
@@ -166,7 +172,7 @@ public class BJSModel {
 
         transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
                 BJSUtils.testBox(BJSUtils.t10_7(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t10_8(t)).getKey())
+                BJSUtils.testBox(BJSUtils.t10_8(t, getMonth, vat)).getKey())
         ));
 
         BJSUtils.write("t10_" + timeStamp + ".csv", tests);
@@ -178,10 +184,10 @@ public class BJSModel {
         tests.add(Arrays.asList("Size", "T1", "T6", "T8", "T10"));
 
         transactions.forEach(t -> tests.add(Arrays.asList(t.size(),
-                BJSUtils.testBox(BJSUtils.t1_8_1_1(t)).getKey(),
+                BJSUtils.testBox(BJSUtils.t1_8_1_1(t, Transaction::getValue)).getKey(),
                 BJSUtils.testBox(BJSUtils.t6_8_1(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t8_8(t)).getKey(),
-                BJSUtils.testBox(BJSUtils.t10_8(t)).getKey())
+                BJSUtils.testBox(BJSUtils.t8_8(t, isInRange(16, 22), Transaction::getId, Transaction::getValue)).getKey(),
+                BJSUtils.testBox(BJSUtils.t10_8(t, getMonth, vat)).getKey())
         ));
 
         BJSUtils.write("t11_" + timeStamp + ".csv", tests);
@@ -222,5 +228,57 @@ public class BJSModel {
 
     private final Comparator<Transaction> compareTransactionsByDate = Comparator.comparing(Transaction::getDate)
             .thenComparing(Transaction::getId);
+
+    public Function<String, Transaction> parseTransaction = (line) -> {
+        final String[] fields = line.split("/");
+        final String id = fields[0].trim();
+        final String counterId = fields[1].trim();
+        final double value;
+
+        try {
+            value = Double.parseDouble(fields[2]);
+        } catch (InputMismatchException | NumberFormatException e) {
+            return null;
+        }
+
+        final String[] dMYHMS = fields[3].split("T");
+
+        final String[] dMY = dMYHMS[0].split(":");
+        final String[] hM = dMYHMS[1].split(":");
+
+        final int year;
+        final int month;
+        final int day;
+        final int hours;
+        final int minutes;
+
+        try {
+            day = Integer.parseInt(dMY[0]);
+            month = Integer.parseInt(dMY[1]);
+            year = Integer.parseInt(dMY[2]);
+            hours = Integer.parseInt(hM[0]);
+            minutes = Integer.parseInt(hM[1]);
+        } catch (InputMismatchException | NumberFormatException e) {
+            return null;
+        }
+
+        return Transaction.of(id, counterId, value, LocalDateTime.of(year, month, day, hours, minutes, 0));
+    };
+
+    public Predicate<Transaction> isInRange(final int begin, final int end) {
+        return t -> t.getDate().getHour() >= begin && t.getDate().getHour() < end;
+    }
+
+    public Function<Transaction, Integer> getMonth = t -> t.getDate().getMonth().getValue();
+
+    public Function<Transaction, Double> vat = t -> {
+        if(t.getValue() > 29) {
+            return t.getValue() * 0.23;
+        } else if(t.getValue() < 20) {
+            return t.getValue() * 0.12;
+        } else {
+            return t.getValue() * 0.20;
+        }
+    };
 }
 
