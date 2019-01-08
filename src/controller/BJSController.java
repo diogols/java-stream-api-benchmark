@@ -6,10 +6,8 @@ import model.Crono;
 import model.Transaction;
 import view.BJSView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class BJSController {
     private BJSView view;
