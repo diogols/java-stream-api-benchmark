@@ -1,3 +1,3 @@
-# BJSApp
+# java-stream-api-benchmarks
 
-Benchmarking Java Streams intends to compare and test the new streams API inserted in Java 8. It's purpose is to measure the performance in various machines and compare it with the API of Java 7.
+This benchmark program compares the performance of the Java 8 Stream API to the previous Java 7 API. Distinct data structures and methodologies are applied to each test. The tests are explained in BJSUtils.java (in pt-PT).
